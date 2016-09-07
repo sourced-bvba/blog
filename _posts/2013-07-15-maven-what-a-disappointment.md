@@ -1,0 +1,18 @@
+---
+layout: post
+title: "Maven 3.1.0 released, what a disappointment"
+comments: true
+categories: [java]
+---
+
+So Maven had a new release today, currently at it's 3.1.0 incarnation. I've been a very strong supporter of Maven the last couple of years. This last release is really convincing me I have to start looking at Gradle. 
+
+Why? I was kind of hoping that the 3.1 release train would mean Maven developers could take the time and effort to start adding some really useful features for Maven end users. With the advent of Gradle and the plethora of projects that have migrated to it (for example Spring and Hibernate), one might think that Maven devs would take the opportunity of a minor release instead of a bugfix release to add some meat to the project. They didn't. <!--more-->
+
+So what can we as end users expect of Maven 3.1.0? Well... nothing. There isn't a single new feature that is new to current users of Maven. Internally, they have changed some things, such as CDI support for Maven plugins, switching to SLF4J (finally!) and changing Aether to the Eclipse version. Seems to me this release is totally built for plugin developers. With Maven's release cycle (last release, 3.0.4, was 7 months ago!) it'll take about another year or so until they add something significant for end users...
+
+Where is the time Jason Van Zyl talked about polyglot maven? The only thing I played with in the past was the polyglot Groovy support. And frankly, with Gradle current scooping up a lot of Maven users, it just doesn't cut it. Now there isn't even a sign of life anymore when it comes to polyglot Maven. The project is gone from GitHub and nowhere to be found. Talk about a missed opportunity, especially because it was so hyped! Same goes for the Maven shell which iirc was demoed by Jason himself at Devoxx a couple of years ago. Now, dead in the water, nowhere to be seen. Either Maven needs to step up its game and evolve, or face becoming Ant. Sonatype, the company behind Maven, seems to be putting most of its effort into Nexus. Which is good, I use Nexus too! But it would be nice to see some degree of communication regarding the future of Maven and what role Sonatype, Maven's top committer, is going to play in that future. 
+
+As much as it pains me to say it, Maven is getting really old, really fast. And as soon as I get my more complex Java multi-module projects built through Gradle in a maintainable manner and Gradle gets some better IDE support, I'm switching over completely. I used to use Maven because of the ease of setting up projects. Currently, there's nothing that distinguishes Maven from Gradle. The multitude of Maven plugins are becoming more and more a burden while developing and my POMs are getting more illegible by the day. Gradle has evolved into something extremely useful in a very short timeframe. Every release adds a lot of new, useful features, some of which you just can't do with Maven. Every 2 to 4 months, there is a new release. It has, to me at least, come to a point in which I can defend choosing it over Maven. As a matter of fact, with Gradle as it is, I really can't think of a reason why I would choose Maven over Gradle.
+
+My mind is set. I'll be transitioning to Gradle. I'll still defend Maven if the choice is between Maven or Ant, but if Gradle is in the picture, I'm not so sure anymore. Pity, I really loved Maven and I would never have thought I'd be writing a Maven rant. But I'm willing to evolve, Maven clearly isn't.
