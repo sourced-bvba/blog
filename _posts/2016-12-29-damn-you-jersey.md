@@ -101,10 +101,9 @@ public List<BuildingJson> find(@RequestParam(value = "nameStartsWith") Optional<
 }
 {% endhighlight %}
 
-That's clean code that actually communicates intent. But with a big, fat, ugly warning. You can do the same thing in Jersey, but it's not
-supported out of the box, unfortunately, so need to add some magic classes to support `Optional`.
+That's clean code that actually communicates intent. But with a big, fat, ugly warning backed by the guys who invented the API in the first place. You can do the same thing in Jersey, but it's not supported out of the box, unfortunately, so need to add some magic classes to support `Optional`.
 
-So I'm at a loss. Do I either add the `Optional` the signature of my method, abandoning overloaded methods? Do I create various if statements
-to handle null values? Be more lenient towards null values in my application layer (I'd rather not)? I really don't know. To me, using `Optional`
-here seems like a good idea, but I tend to agree with most that using overloaded methods makes for more readable code. But if the REST framework doesn't
-allow you to write clean code, what the least bad alternative?
+So I'm at a loss. Do I either add the `Optional` the signature of my application layer method, abandoning overloaded methods? Do I create various if statements
+to handle null values and call the overloaded methods or build up the request object like that? Or Be more lenient towards null values in my application layer (I'd rather not)? I really don't know. To me, using `Optional` here seems like a good idea, but I tend to agree with most that using overloaded methods makes for more readable code. But if the REST framework doesn't allow you to write nice, clean code, what the least bad alternative? It seems to me like the boundaries of clean code in a hexagonal (or clean) architecture are tested in the infrastructure layer, because of the specific APIs being used there and the limitations those APIs bring to the scene.
+
+Feel free to comment on my Twitter.
