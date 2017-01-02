@@ -65,13 +65,13 @@ pattern for the request (because of the combinations), but the `if` statements w
 {% highlight java %}
 @GetMapping
 public List<BuildingJson> find(@RequestParam(value = "nameStartsWith", required = false) String name)  {
-	ListBuildingRequestBuilder requestBuilder = new ListBuildingRequestBuilder();
-	if(name != null) {
-		requestBuilder.setNameStartsWith(name);
+  ListBuildingRequestBuilder requestBuilder = new ListBuildingRequestBuilder();
+  if(name != null) {
+    requestBuilder.setNameStartsWith(name);
   }
   // if ...
   // if ...
-	return listBuildings.execute(requestBuilder.build(), new JsonBuildingResponseModelPresenter());
+  return listBuildings.execute(requestBuilder.build(), new JsonBuildingResponseModelPresenter());
 }
 {% endhighlight %}
 
