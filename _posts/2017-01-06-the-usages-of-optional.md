@@ -44,7 +44,7 @@ parameter, Jersey needs a `@BeanParam` annotation. With Spring MVC for example t
 {% highlight java %}
 @GetMapping
 public List<BuildingJson> find(ListBuildingsRequestParams params)  {
-	return listBuildings.execute(new ListBuildingsRequest(name), new JsonBuildingResponseModelPresenter());
+	return listBuildings.execute(params.toRequest(), new JsonBuildingResponseModelPresenter());
 }
 {% endhighlight %}
 
