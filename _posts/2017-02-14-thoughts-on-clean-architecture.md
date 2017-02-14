@@ -49,8 +49,25 @@ public BuildingJson get(@PathParam(("buildingId")) String buildingId)  {
 }
 {% endhighlight %}
 
+The `JsonBuildingResponseModelPresenter` has one responsibility: accept BuildingResponseModel objects and convert them to JSON structures (here `BuildingJson`), storing them statefully inside itself and presenting them using `getPresentedResult`.
+
 This adheres to the Dependency Inversion principle and keeps Boundary implementations out of my infrastructure layers.
 
 The only way how I'd be compliant with the original drawing and which actually takes away both of my concerns is if I see the ResponseModelConsumer as a Boundary. Then indeed a Boundary (whose responsibility is to consume ResponseModels) would have a dependency on another Boundary (which is actually a use-case) and the Presenter would be an implementation of a Boundary. But it just feels so strange to do so. An added benefit of the ResponseModelConsumer approach is that asynchronous handling becomes perfectly possible, without having that concern go beyond the infrastructure layer. One can perfectly create a reactive implementation or have it simply put the results on a queue.
 
 Because of the abstract nature of the original design, it's hard to determine what the good approach is. I feel like I've gone as close as I possibly can to the original design while maintaining enough flexibility to defer certain choices to a later point in time. I guess the only person that's able to answer this is Uncle Bob, but I'd love to hear your responses and how you interpret the original design.
+
+*Edit:*
+
+After a couple of discussions with some likeminded colleagues, I decided to graphically represent how I interpreted Clean Architecture and how I changed it to what I think is a bit more clear and unambigiuous.
+
+![My Clean Architecture](/img/MyCleanArchitecture.png)
+
+What I changed:
+
+- I changed the naming of a Boundary to a Use Case because that's what a Boundary actually is to me
+- An Interactor therefor becomes a Use Case Implementation
+- A Use Case has a optional reference to a ResponseModelConsumer, which can be implemented as a Presenter
+- A Use Case has a optional reference to both a ResponseModel and a RequestModel, but evidently, not all use cases have both (or either)
+
+On an implementation level in Java, a ResponseModelConsumer is nothing more than the existing `Consumer` class in Java 8, generified with the ResponseModel, so there's actually no new interfaces introduces on a code level.
