@@ -1,0 +1,33 @@
+---
+layout: post
+category : article
+title: "The state of our industry"
+comments: true
+tags : [opinion]
+---
+
+Some weeks ago I fell down the stairs and broke my leg. This means I have plenty of time on my hands to read a lot of books and articles. Lately I read a lot of opinion articles on how software should be written and how some people are completely missing the ball.
+
+So I'm left wondering the same question a lot of my colleagues are asking themselves: 
+
+> If we all know how good software should be written, why the hell is there still so much bad software being written?
+
+See, to me, basic practices like good architectural design, clean code, DRY and SOLID aren't just words on a resume. It's the basis on which I evaluate all the work I do. Why? Because I've written some pretty bad code and I know the damage it can do. I've also seen the long term gains of really good code, why you need to look at the bigger picture and focus on delivering business value instead of using new features, technologies or approaches "just because we can".
+
+Is it the fault of the schools? Are they teaching young programmers to code in a bad way just to get the theory in their heads and disregarding good industry practices and relying on the industry to show new kids how it should be done in the real world? Maybe. I've seen both sides of the coin on this one. I've seen youngsters that were able to hit the ground running. Those were mostly the guys that actually cared about becoming a good developer and dedicated time in order to become one. These guys are sponges: they are thirsty for knowledge and are willing to learn. But I've also seen freshly graduated students that basically need to unlearn everything they learned in school because what they saw might work on school projects but hopelessly fails in the real world, but they are convinced that they really are writing bad software. They are stripped down to the basic knowledge and built back up. And if they happen to start at a company that isn't really committed to writing good quality software, they're basically screwed.
+
+Which brings me to another possible guilty party: software companies. I'm not talking about the hipster names like Netflix, Spotify, Uber or any other billion dollar software company. I think it's a safe bet that over half of the regular IT companies aren't really concerned with writing great code. They ship out feature after feature, the faster the better. Their motto is: 
+
+> As long as the client is happy, who cares about the code? 
+
+These are the companies that are literally destroying our industry. These are the companies that manage to roll out high-visibility projects only to have them fail big time and have the results splashed out on tech blogs and if they're really unlucky, national newspapers and television. These companies are run from a financial perspective instead of a engineering perspective and they frankly don't care about quality. Imagine that the aeronautics industry upheld the same quality assurance as ours: you'd see a passenger jet fall out of the sky and you'd see crowds applauding if one ever managed to land safely, on time and with all passengers still in the plane! Seriously, what the hell is wrong with software companies?
+
+And then we have suspect number 3, experienced developers. Our hubris knows no bounds. We go to conferences, see the newest framework, the newest approach in how you can write software for 10000 concurrent users or the next language on the block and we aimlessly adopt it, hoping to become one of the cool kids on the block. Here's the reality folks: not a lot of us are going to write software on the scale of Netflix. You probably don't need event sourcing. That runtime modularity framework that allows to you interchange tiny blocks of your system without downtime? YAGNI. We should go back and focus on the basics. Get the architectural design down to an art. We should pick technologies by their merit to deliver business value quicker. And if we see something that is slowing us down: cut it out and replace it.
+
+But then there is the last suspect: clients. In this day and age, it's easy to become blasé about software. Why would you pay X for a piece of software if some schmuck can write it for you for a 10% of the price in Kerblechistan? And why wouldn't you then still go to a better company and demand insane discounts "because someone else can do it cheaper". Clients need to realize that their insistence on bargaining is actually destroying our industry, because it's such an accessible one. Not everyone can become a rocket engineer, building the next space shuttle. But a lot more think that becoming a software engineer that writes software to actually control that damn space shuttle is within their reach. 
+
+Perhaps we need a rapture in our industry. We know high-profile failures don't do shit about the quality of our industry: I know of a project that was tanked by a company, only to have that same company get rewarded the contract to go at it again. Perhaps we need something at a scale of the Challenger or Columbia explosions. We all know that actually woke the space industry. But why does it need to come to this? We're all smart people, I hope? We all stood behind the agile manifesto when it came out and we all thought that it would change the face of the industry. But it only made a dent. Perhaps we need to get all the CEO's and CTO's of all the major software companies out there in a single room and ask them one basic question:
+
+> WHAT THE FUCK ARE YOU DOING?
+
+Luckily there is a growing group of people that call themselves software craftsman and live up to the name. I don't consider myself one of them, but I sure as hell am aspiring to become one of them and I'm sure I'm going to get there. These are the dreamers, the guys that speak up (and in some cases, get fired or leave because of it). It's the group of people that say: "We refuse to write crap, even if you put a gun to our heads". But they are still the minority unfortunately. But I have hope. I have to. Humanity survived the Middle Ages. It's time for a Renaissance, the Age of Enlightenment, in our industy. But it's going to take all of us. And if you don't agree with me, quit your job and apply at a McDonalds. Please.  
