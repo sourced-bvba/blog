@@ -3,7 +3,6 @@ layout: post
 category : article
 title: "The state of our industry"
 comments: true
-published: false
 tags : [opinion]
 ---
 
