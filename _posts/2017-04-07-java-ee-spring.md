@@ -1,201 +1,23 @@
 ---
 layout: post
 category : article
-title: "Spring Boot and hypermedia, part 1: HAL"
+title: "Here goes the Java EE vs Spring debate again"
 comments: true
-tags : [kotlin]
+tags : [java]
 ---
 
-So must of us have already encountered hypermedia when dealing with REST API. Hypermedia is actually a bunch of metadata that allows you to create navigable or auto-discoverable REST services. In other words, by adding some data, you can navigate the resources within a system without actually having to know the exact URLS.
+For years now there has been a lot of animosity between the Spring community and the Java EE community. This goes back to the beginning years of the Spring framework where the founder, Rod Johnson, fired off a couple of nasty shots towards the Java EE community. While I don't approve of his methods, one cannot deny that the Java EE ecosystem at that time really was a mess and really not much fun to work with. Even Java EE supporters acknowledge that fact. 
 
-There are many implementations out there and the goals of this series is to show a couple of them, some of them more widely used than others. And while the goal of all the hypermedia implementations are the same, there is a big difference in their capabilities as you'll notice. In my examples, I'll be using Spring Boot and the code will be written in Kotlin for brevity.  
+But times have changed and so have the frameworks. Java EE 7 is arguably the best release of the EE specification to date and to be honest, the Spring framework has contributed a lot to the progress Java EE has made and vice versa. CDI and the Spring DI container are very similar and the EJB3 specification and Spring beans also have a lot in common. It's a symbiosis that has furthered the Java community as a whole and as such we're still the most popular server side programming platform. 
 
-So first off is HAL, which is actually the hypermedia implementation supported out of the box by Spring in the Spring HATEOAS library. 
+Because of the assertive and sometimes aggressive nature of the Spring community and Pivotal, the company behind it, there is a now a very vocal counter movement from the EE community. And I can't really say I blame them. Some attacks have been vitriolic and non-constructive, bent on making the other party lose face. And while there are olive branches being offered by both sides, it doesn't seem to defuse the situation and bring the communities back together. But I really wonder why it would be necessary to bring the two communities together. While the animosity between the two parties hasn't been civil sometimes, one cannot deny the fact that the atmosphere resulted in innovation on the EE side and standardisation on the Spring side. But the tone of the discussion could be dialed down a couple of notches.
 
-HAL (or Hypertext Application Language) is one of the more widely use hypermedia formats. It's simplistic in it's nature, only supporting links and embedded resources. 
+While I don't agree at all with the marketing games the Pivotal crew is playing, never missing a single article or report that says EE is becoming less popular and actively promoting those articles, one needs to remember that Pivotal is a commercial company, owned by Dell, a listed company. Most decisions in such companies tend to ignore community concerns or proper decorum for that matter. And on the EE side, Oracle and IBM have played similar games and like Pivotal, still do to this day. Perhaps not as visible as Pivotal, but still. But the real issue at hand is the fact that both communities do not reflect the opinions of the commercial companies that have a vested interest in one of the approaches and that the way those companies conduct their businesses leaves a bad impression on all of us, tainting the way we look at each other.
 
-An example HAL document would look like this:
+I'm a Spring framework user. I maintained (and still maintain) code that once was mentioned on the Spring website (Spring Rich Client). I have been a supporter for over 10 years and probably always will be. But do I support Pivotal's below-the-belt hits to the EE community? No. Because it doesn't serve any purpose except for promoting a commercial position, which I frankly don't care about because I got into Spring for completely different reasons. Will I ever use EE? As a platform probably not, because Spring fills every need I have and I don't see the point at the moment. Do I use EE specifications? Sure, I use JPA, JMS, JTA, ... Have I tried EE solutions? Sure, I've played around with Payara Micro, WildFly Swarm and KumuluzEE, but in the end I decided it just wasn't for me.
 
-{% highlight json %}
-{
-    "_links": {
-        "self": { "href": "/orders" },
-        "next": { "href": "/orders?page=2" },
-        "ea:find": {
-            "href": "/orders{?id}",
-            "templated": true
-        }
-    },
-    "currentlyProcessing": 14,
-    "shippedToday": 20,
-    "_embedded": {
-        "ea:order": [{
-            "_links": {
-                "self": { "href": "/orders/123" },
-                "ea:basket": { "href": "/baskets/98712" },
-                "ea:customer": { "href": "/customers/7809" }
-            },
-            "total": 30.00,
-            "currency": "USD",
-            "status": "shipped"
-        }, {
-            "_links": {
-                "self": { "href": "/orders/124" },
-                "ea:basket": { "href": "/baskets/97213" },
-                "ea:customer": { "href": "/customers/12369" }
-            },
-            "total": 20.00,
-            "currency": "USD",
-            "status": "processing"
-        }]
-    }
-}
-{% endhighlight %}
+And in the EE community, similar voices exist. They have their own valid reasons to choose the EE approach over the Spring approach. And I'm fine with that, as long as the solutions they built with it fill a need, why should anyone have a problem with that. And like me, there are a lot of EE developers that will probably never use something like Spring Boot because their existing solutions provide the most efficient way for them to write software. They'll probably have tried it and came to the conclusion it just wasn't for them.
 
-JSON documents that have been enriched by the HAL format have 3 items:
-- The standard JSON state of your resource
-- Links that point to other resources
-- Embedded resources that may contain state and links of that embedded resource
+For most applications, it doesn't really matter whether you're using Spring or EE. A lot of the applications just use DI, some persistence layer and a REST layer. The choice between Spring or EE is then just that, a choice and any of them are the right choice. Sure, I can make arguments for use cases that are a wee bit harder to implement with Java EE, but there's nothing that says the two approaches can coexist within the same system. So yeah, if you want to use Spring Data repositories in an EE application, what the hell is stopping you? 
 
-We'll start off by creating some code that creates a basic REST endpoint that we can work on and that basically is able to return the raw JSON state without any hypermedia.
-
-{% highlight kotlin %}
-@@SpringBootApplication
-@RestController
-class HalApplication {
-    @RequestMapping("/orders")
-    fun getOrders() : Orders {
-        return Orders(14, 20,
-                listOf(Order(30.00, "USD", "shipped"), Order(20.00, "USD", "processing")))
-    }
-}
-
-open class Orders(val currentlyProcessing: Int, val shippedToday: Int, val orders: List<Order>) 
-
-open class Order(val total: Double, val currency: String, val status: String)
-
-fun main(args: Array<String>) {
-    SpringApplication.run(HalApplication::class.java, *args)
-}
-{% endhighlight %}
-
-This will return a standard JSON document as we all know and love.
-
-{% highlight json %}
-{
-   "shippedToday" : 20,
-   "currentlyProcessing" : 14,
-   "orders" : [
-      {
-         "total" : 30,
-         "status" : "shipped",
-         "currency" : "USD"
-      },
-      {
-         "currency" : "USD",
-         "status" : "processing",
-         "total" : 20
-      }
-   ]
-}
-{% endhighlight %}
-
-To add HAL support, both data classes need to extends `ResourceSupport` which enables them to add links. Now that we've done this we can add the links needed for the example. 
-
-{% highlight kotlin %}
-fun getOrders() : Orders {
-	val firstOrder = Order(30.00, "USD", "shipped")
-	firstOrder.add(Link("/orders/123", "self"))
-	firstOrder.add(Link("/baskets/98712", "ea:basket"))
-	firstOrder.add(Link("/customers/7809", "ea:customer"))
-	val secondOrder = Order(20.00, "USD", "processing")
-	secondOrder.add(Link("/orders/124", "self"))
-	secondOrder.add(Link("/baskets/97213", "ea:basket"))
-	secondOrder.add(Link("/customers/12369", "ea:customer"))
-	val orders = Orders(14, 20,
-			listOf(firstOrder, secondOrder))
-	orders.add(Link("/orders", "self"))
-	orders.add(Link("/orders?page=2", "next"))
-	orders.add(Link(UriTemplate("/orders{?id}"), "ea:find"))
-	return orders
-}
-{% endhighlight %}
-
-I've hardcoded the links here, but using the `ControllerLinkBuilder` you can reference methods on a controller to get the link based on the `RequestMapping` value. But this article hardcoding them will suffice.
-
-If we now get the JSON from the `/orders` endpoint, this is what we get.
-
-{% highlight json %}
-{
-   "orders" : [
-      {
-         "currency" : "USD",
-         "total" : 30,
-         "status" : "shipped",
-         "_links" : {
-            "self" : {
-               "href" : "/orders/123"
-            },
-            "ea:basket" : {
-               "href" : "/baskets/98712"
-            },
-            "ea:customer" : {
-               "href" : "/customers/7809"
-            }
-         }
-      },
-      {
-         "currency" : "USD",
-         "_links" : {
-            "ea:basket" : {
-               "href" : "/baskets/97213"
-            },
-            "ea:customer" : {
-               "href" : "/customers/12369"
-            },
-            "self" : {
-               "href" : "/orders/124"
-            }
-         },
-         "total" : 20,
-         "status" : "processing"
-      }
-   ],
-   "currentlyProcessing" : 14,
-   "_links" : {
-      "ea:find" : {
-         "href" : "/orders{?id}",
-         "templated" : true
-      },
-      "next" : {
-         "href" : "/orders?page=2"
-      },
-      "self" : {
-         "href" : "/orders"
-      }
-   },
-   "shippedToday" : 20
-}
-{% endhighlight %}
-
-Almost there. The main difference now is the orders, which in the HAL format is an embedded resource. And here be dragons. The support for embeddeds in Spring HATEOAS isn't that great and despite sifting through the code and possible examples, I could get any of them to work. What I ended up doing is handling the embedded as a basic map. Perhaps it's due to the fact that I'm using Kotlin or I'm just missing something, frankly I don't know.
-
-So now the `Orders` looks like this:
-
-{% highlight kotlin %}
-open class Orders(val currentlyProcessing: Int, val shippedToday: Int, val _embedded: Map<String, List<Any>>) : ResourceSupport()
-{% endhighlight %}
-
-and the creation of the `Orders` object looks like this:
-
-{% highlight kotlin %}
-val orders = Orders(14, 20, mapOf(Pair("ea:order", listOf(firstOrder, secondOrder))))
-{% endhighlight %}
-
-After this, you'll end up with the JSON example we started the article with. 
-
-So what do I think of HAL and the Spring HATEOAS support? 
-
-Personally, as far as linking is concerned it's very nice. With the `ControllerLinkBuilder` you can easily build up the link URLs which will stay in sync with the annotations. The embedded concept is something I'd steer clear of, because of the lack of documentation and clear rules of usage. I don't see the point in embedding a resources through a convoluted mechanism like that when you can either use the link system for it or just plain using a list or any other collection.
-
-HAL also only supports GET operations, as there is no way to indicate whether a link is a GET, a POST or a PUT, so it assumes GET. It's principle usage is for discovering data within a REST based API, but to interact with the API regarding data manipulation you'll still need some other kind of documentation.
+People need to realize how silly the fight really is. As developers, we've been blessed by not having one but two valid choices to build high-quality applications. And believe me when I say that there are much worse choices in the Java ecosystem to work with that Java EE or Spring. Instead of going at each other, how about we join forces and get rid of those in our industry?
