@@ -70,9 +70,9 @@ class HalApplication {
     }
 }
 
-open class Orders(val currentlyProcessing: Int, val shippedToday: Int, val orders: List<Order>) 
+class Orders(val currentlyProcessing: Int, val shippedToday: Int, val orders: List<Order>) 
 
-open class Order(val total: Double, val currency: String, val status: String)
+class Order(val total: Double, val currency: String, val status: String)
 
 fun main(args: Array<String>) {
     SpringApplication.run(HalApplication::class.java, *args)
@@ -100,7 +100,7 @@ This will return a standard JSON document as we all know and love.
 }
 {% endhighlight %}
 
-To add HAL support, both data classes need to extends `ResourceSupport` which enables them to add links. Now that we've done this we can add the links needed for the example. 
+To add HAL support, both data classes need to extend `ResourceSupport` which enables them to add links. Now that we've done this we can add the links needed for the example. 
 
 {% highlight kotlin %}
 fun getOrders() : Orders {
@@ -183,7 +183,7 @@ Almost there. The main difference now is the orders, which in the HAL format is 
 So now the `Orders` looks like this:
 
 {% highlight kotlin %}
-open class Orders(val currentlyProcessing: Int, val shippedToday: Int, val _embedded: Map<String, List<Any>>) : ResourceSupport()
+class Orders(val currentlyProcessing: Int, val shippedToday: Int, val _embedded: Map<String, List<Any>>) : ResourceSupport()
 {% endhighlight %}
 
 and the creation of the `Orders` object looks like this:
