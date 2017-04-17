@@ -6,7 +6,7 @@ comments: true
 tags : [java]
 ---
 
-Despite what you might think when reading my last articles, this boy still writes code. Today I'm looking at [Togglz]()http://www.togglz.org), a Java framework for adding feature toggles in your application. Feature toggles are interesting when you're doing continuous deployment and kind of want to have some measure of control of which features are actually enabled for end users. They also allow you to do A/B testing on a backend level, where certain features are enabled for some users based on their location or other determining factors.
+Despite what you might think when reading my last articles, this boy still writes code. Today I'm looking at [Togglz](http://www.togglz.org), a Java framework for adding feature toggles in your application. Feature toggles are interesting when you're doing continuous deployment and kind of want to have some measure of control of which features are actually enabled for end users. They also allow you to do A/B testing on a backend level, where certain features are enabled for some users based on their location or other determining factors.
 
 Togglz is actually a very nice framework with a lot of integrations, one of which is Spring Boot, which makes me very happy off course. Unfortunately, adding Togglz to your code is quite intrusive, as the examples give you instructions like this:
 
