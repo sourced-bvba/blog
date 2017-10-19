@@ -13,6 +13,13 @@ layout: default
                     <h2 class="subheading">{{ page.subtitle }}</h2>
                     {% endif %}
                     <span class="meta">Posted by {% if page.author %}{{ page.author }}{% else %}{{ site.title }}{% endif %} on {{ page.date | date: "%B %-d, %Y" }}</span>
+                    <span class="meta">{% capture words %}
+                                            {{ page.content | number_of_words | minus: 250 }}
+                                       {% endcapture %}
+                                       {% unless words contains "-" %}
+                                            {{ words | plus: 250 | append: " words, " }} {{ words | plus: 250 | divided_by: 180 | append: " minute read" }}
+                                       {% endunless %}
+                    </span>
                 </div>
             </div>
         </div>
