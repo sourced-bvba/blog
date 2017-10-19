@@ -3,7 +3,6 @@ layout: post
 category : article
 title: "A new model for software developers"
 comments: true
-published: false
 tags : [opinion]
 ---
 
@@ -19,6 +18,7 @@ Our industry needs to be more aware of things like the Dreyfus model. For those 
 - Competent
 - Proficient
 - Expert
+
 While novices need rules and procedures and they are the most efficient when people tell them how to do a certain thing. Experts on the other hand work from a intuitive perspective. They 'know' what needs to be done in order to achieve a certain goals. The problem lies in the fact that experts cannot always communicate why they do something a certain way, they just know it's the right way. The levels in between show a rise in intuitive capacity and also a rise in perceived chaos to the outside world.
 
 Most software craftsmen are located in the top 3 categories, because software craftsmanship requires a certain level of maturity and experience and with that comes competence. Most I know are either proficient or experts in their fields. While the model seems linear, it is not. It's fairly easy to get from a novice to a proficient level of competence, but in order to get to the last two levels, it requires a certain way of thinking and organizing. The life of an expert is a very chaotic one and very different from that of a novice or advanced beginner.
