@@ -1,15 +1,15 @@
 # Site settings
-title: Insane Programming
+title: Sourced Blog
 header-img: img/home-bg.jpg
-email: lievendoclo1983@gmail.com
-copyright_name: Lieven Doclo
-description: "Ramblings of a seasoned Java developer"
+email: lieven@sourced-bvba.be
+copyright_name: Sourced BVBA
+description: "Insights, research and opinions"
 baseurl: ""
-url: "http://www.insaneprogramming.be"
+url: "https://blog.sourced-bvba.be/"
 twitter_username: lievendoclo
 github_username:  lievendoclo
 facebook_username:  LievenDoclo
-email_username:  lievendoclo1983@gmail.com
+email_username:  lieven@sourced-bvba.be
 
 # Build settings
 markdown: kramdown
