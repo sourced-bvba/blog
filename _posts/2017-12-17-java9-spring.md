@@ -23,7 +23,7 @@ Anyone that has built a Spring Boot application that writes to a database has pr
 Granted, Java 9 may work perfectly if you build basic, simple apps that adhere to the rules that are enforced by Java 9. But Spring, as it stands, it currently the most used enterprise framework out there. And the sad reality is that it's just unusable with the module path as it currently is (I tested with 5.0.2). You need to use a couple of `--add-opens` to your runtime JVM arguments and be prepared to add `opens ...` just about everywhere in your application that exposes something to the Spring context that isn't exported yet. It's a very painful experience to say the least and in hindsight, a futile effort and a waste of time.
 But to be honest: Juergen Hoeller warned us about this. He explicitly said that Spring would compile on the module path but wouldn't make any guarantees that it would run on the module path. And he was right: it doesn't. 
 
-{% highlight %}
+{% highlight text %}
 Caused by: org.springframework.aop.framework.AopConfigException: Unable to instantiate proxy using Objenesis, and regular proxy instantiation via default constructor fails as well; nested exception is java.lang.NoSuchMethodException: org.springframework.boot.autoconfigure.http.HttpMessageConverters$$EnhancerBySpringCGLIB$$1d90bff9.<init>()
         at spring.aop@5.0.2.RELEASE/org.springframework.aop.framework.ObjenesisCglibAopProxy.createProxyClassAndInstance(ObjenesisCglibAopProxy.java:82) ~[spring-aop-5.0.2.RELEASE.jar:na]
         at spring.aop@5.0.2.RELEASE/org.springframework.aop.framework.CglibAopProxy.getProxy(CglibAopProxy.java:205) ~[spring-aop-5.0.2.RELEASE.jar:na]
