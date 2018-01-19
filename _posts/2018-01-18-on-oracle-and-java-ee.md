@@ -14,7 +14,7 @@ In their plea, the Guardians asked to Oracle to retain the possibility to keep o
 
 Now, what's all the fuss about, you may ask? A package rename is for most a single line `sed` script, and the name of a product can change, AngularJS changed to Angular after all.
 
-Well, Java EE (or EE4J) is considered as being the 'standard' approach to building enterprise Java applications. It's API are considered standardized through the input of various enterprise stakeholders by using the now defunkt JCP. On the other hand you had Spring, which was a product of Interface21/SpringSource/Pivotal, which is now a very popular, if not the most popular, appraoch to building Java applications. However, it's not considered a standard, at least not by the Java EE guys, as they laid claim to that title. 
+Well, Java EE (or EE4J) is considered as being the 'standard' approach to building enterprise Java applications. It's API are considered standardized through the input of various enterprise stakeholders by using the now defunkt JCP. On the other hand you had Spring, which was a product of Interface21/SpringSource/Pivotal, which is now a very popular, if not the most popular, approach to building Java applications. However, it's not considered a standard, at least not by the Java EE guys, as they laid claim to that title. 
 
 Being considered as a industry standard has many consequences. Some companies only wish to work with standard because of the perceived safety using a standard means. Integrators tend to focus on integrating with a standard instead of a proprietary approach. So if Java EE loses the perception of being the official standard, it has a lot to lose. 
 
