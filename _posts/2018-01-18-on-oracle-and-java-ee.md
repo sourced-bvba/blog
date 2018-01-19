@@ -20,7 +20,7 @@ Being considered as a industry standard has many consequences. Some companies on
 
 Personally, I never considered Java EE the standard for enterprise development. It was a standard, sure, but on the same level as Spring. People either chose Java EE or Spring, not unlike one would choose Makita or Milwaukee when choosing an angle grinder. For me, the moment Oracle relinquished control of Java EE and turned it over to the Eclipse Foundation, it became a former standard and thus now proprietary apporach, just like most other Eclipse projects. It just officially became 'the framework formerly known as Java EE' and just one of the ways to build an enterprise application.
 
-So if EE4J is forced to use it's own non-standard packages and no longer has a name that was linked in our collective mind to a standard, what makes it different from Spring. 
+So if EE4J is forced to use it's own non-standard packages and no longer has a name that was linked in our collective mind to a standard, what makes it different from Spring?
 
 Nothing.
 
