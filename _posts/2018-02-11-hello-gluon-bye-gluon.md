@@ -18,13 +18,13 @@ Gluon is a Java framework that utilizes a VM in order to run Java applications o
 
 I think about 2 years ago, the people at Gluon announced their Gluon VM initiative. They were building a new VM from the ground up, claiming near native performance, and based on the newest Java 9. Rainbows would come from the sky and deliver developers the possibility to build new Java applications on mobile devices with (almost) the same performance as native applications. 
 
-So I revisited Gluon.
+Recently, I saw that Gluon VM finally became a reality, so I revisited Gluon, hoping it would be less of a pain this time to get it to work.
 
 ...
 
 ...
 
-I started a simple application, single view, one page. A basic Hello World, if you will. Running the application natively went perfecly smooth. And then I tried running the application in the iPhone simulator. 5 minutes passed. 10 minutes passed, 15 minutes passed. It was still compiling. A SINGLE VIEW APPLICATION. Really?! They say you only get one shot at a first impression and Gluon failed miserably here. But perhaps I was doing something wrong. So I went to the Gluon documentation. Zilch. Nothing. Useless. Ok, perhaps Google will help me. It was the Higgs class that was slow as hell to compile my classes so I Google `gluon higgs slow`. For those with a bit of knowledge of quantum physics, you can probably guess how much help Google was. Zilch. Nothing. Useless.
+I started a simple application, single view, one page. A basic Hello World, if you will. Running the application natively went perfecly smooth. And then I tried running the application in the iPhone simulator. 5 minutes passed. 10 minutes passed, 15 minutes passed. It was still compiling. A SINGLE VIEW APPLICATION. Really?! They say you only get one shot at a first impression and Gluon failed miserably here. But perhaps I was doing something wrong. So I went to the Gluon documentation. Zilch. Nothing. Useless. Ok, perhaps Google will help me. It was the Higgs class that was slow as hell to compile my classes so I Google `gluon higgs slow`. For those with a bit of knowledge of quantum physics, you can probably guess how much help Google was. Zilch. Nothing. Useless. Apparently running something in the iPhone simulator is something that is discouraged? I did get something to work on my iPhone 6s however, but it took way to long for comfort. It's just not usable for me at this point and I'd go home frustrated every day if I had to work like this.
 
 Gluon apparently has gained a lot of support from the Devoxx people and the Devoxx apps are developed using Gluon. So apparently it is possible. But it's easy to write Gluon applications if you have a direct link to one of the core developers. Many developers don't have that luxury. And having inadequate documentation in this case is completely unacceptable. And this is something that costs more than double the amount a IntelliJ Ultimate license costs per developer. 
 
