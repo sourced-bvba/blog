@@ -1,0 +1,48 @@
+---
+layout: post
+category : article
+title: "On Spring Data and REST"
+comments: true
+tags : [technical]
+---
+
+Sometimes innocent tweets can transform into interesting discussion and so did this little piece of code Josh Long ([@starbuxman](https://www.twitter.com/starbuxman)):
+
+{% twitter https://twitter.com/starbuxman/status/963035061812645888 %}
+
+It looks innocent, and from a technical standpoint you can't deny this is a cool piece of code. However, taking a step back, there is something seriously wrong with this piece of code. 
+
+For those that haven't read some of my articles or know what ticks my boxes, I'm very much into designing and architecting maintainable software. Because of this, I'm a huge fan of clean architecture. That said, I'm also keenly aware of the fact that pure clean architecture is sometimes serious overkill, but I also firmly believe that you should aspire to stay as close as possible to its principles, making sure that deviations are because of a very good reason (not wanting to decouple because 2 datastructures look the same is NOT a good reason for example). To put it very simply, a basic REST application with clean architecture would go something like this:
+
+{% highlight text %}
+User -> REST controller -> Use case (interface) -> Use case (implementation) -> Gateway (interface) -> Repository (implementation) -> DB
+{% endhighlight %}
+
+Within this flow, you try to decouple as much as practical. The user gets view models returned (JSON structures), the boundary return response models (data structures specific to the use case), the gateway returns domain models (containing business logic) and the repository uses a persistent model. 
+The REST controller lives in the outward facing infrastructure layer, the use case in the application layer, the gateway in the domain layer and the repository in the inward facing infrastucture layer. From a layer dependency standpoint:
+
+{% highlight text %}
+infra-web -> app-api <- app-impl -> domain <- infra-persistence
+{% endhighlight %}
+
+Looks familiar? It should. It's called dependency inversion, the last of the SOLID principles. You can make some concessions here, for example merging the domain model into the persistent model by adding JPA annotations on the domain model. However, each compromise comes at a price and one needs to be aware of this. Basically, you're breaking the Single Responsibility Principle then. If you ever want to change persistence, you'll be forced to change your domain layer...
+
+Which brings us to Josh's code example. Car is an aggregate root in Spring Data. For all intents and purposes, this is a persistent entity as this should be managed by a Spring Data repository, in other words for example a JPA entity or a MongoDB document. If you look at Oliver Gierke's (the man behind Spring Data) [writings](http://static.olivergierke.de/lectures/ddd-and-spring/), it's clear that the distinction between a persistent entity and an aggregate root just isn't there, despite this tweet:
+
+{% twitter https://twitter.com/olivergierke/status/963089928279257088 %}
+
+Sorry, but there is no distinction based on what's in the documentation (an aggregate is an entity and vice versa). You don't need to look further as looking at one of his talks on DDD and Spring Data or just read the Spring Data documentation to get this point. The problem is not so much as there not being a distinction (remember, I just said you can perfectly combine domain aggregate roots and JPA annotation). As long as this is contained in the domain layer of your application, it can be a valid compromise. The problem here is that is taken a step further and that this feature requires you to have access to your persistence layer directly from your web layer by the ability to expose them through your REST controller. And that's exactly what the code example shows. Merging the concepts of aggregate root and persistent entity definitions just because it fits your framework and so that you can directly expose them to the outside world doesn't make it the correct way to do it. For those that may find this sound familiar, this is what a monolith looks like: both the outward facing layer and the inside facing layer being able to see one another directly. This approach may work for basic CRUD applications (even then...), but applications rarely remain just CRUD. Or as someone put it: it's human centipede driven design, the backdoor is connected to the front-door.
+
+As a rule of thumb, there a basic principle I try to uphold when managing dependencies in any software project about the number of framework dependencies the domain and application layer should have, which is as close as possible to zero (things like javax.money or other supporting data structures are perfectly acceptable here). The domain layer should handle domain aggregates and contain domain logic. The application layer should get the aggregates from the domain layer and call the needed business logic on those aggregates to fulfill the use cases it needs to handle. There shouldn't be any need for a framework there. Why should one be concerned about technical frameworks when writing business code?
+
+Spring Data's support for REST completely throw away the concept of decoupling and in my honest opinion and encourages bad design. Spring Data's place is in the persistence infrastructure layer, not in the domain layer and certainly not in the web infrastructure layer. There's even something called Spring Data REST, which allowes you to directly expose your JPA repositories as REST resources. This is about as close as possible that you can get to directly calling the database from your REST controller. It just screams bad design. There are so many SOLID principle violations there that I just cannot fathom anyone willing to compromise to that extent. Maybe, and I say MAYBE, for a proof of concept piece of code. But even then, it would maybe take me 5 minutes longer to do it a much cleaner way. Watching [this presentation](https://www.infoq.com/presentations/spring-data-rest-springone2016) I was witnessing seeing the start of a monolith. Some of us can look at this and go like 'okay, cool, but that's not how I would do it'. Others will look at this and go like 'ah, great, I don't need all those layers'. I get that it's great demo material, but showcasing how to build a monolith-disguised-as-a-microservice doesn't seem like the way to go. People want to build REST webservices without the layers to get to the data, I get it. But don't tell me it's well-crafted, well-designed software. It's a monolith. Spring Data REST encourages people actively to build micro-monoliths and even worse, tries to disguise it under the DDD umbrella.
+
+While I have the upmost respect for Oliver (Spring Data is a key component in my persistence layer), the REST support in Spring Data is just bonkers. There is no project I have ever worked on that would allow these kinds of constructions and to be frank, I would never allow anyone to expose JPA entities or aggregate roots directly through a REST controller, how cool the mechanism may be. Spring Data should stay where it belongs, which is facing the persistence layer. While I understand the convenience exposing your entities directly through REST brings to the table, it requires you to make architectural design concessions that will prove very painful in the future. And once you start decoupling your models, the entire REST support in Spring Data becomes useless. Using it, IMHO, is equal to just saying to don't give a shit about design principles. The end (a REST interface backed by a persistence store) doesn't justify the means. And as for Spring Data REST: sure, it's cool tech. But it doesn't take away the fact that no one with a bit of feeling towards design or architecture should go around this in the largest circle possible.
+
+And I understand why Spring Data is doing this. It's great to have your framework in every single layer of an application. It's called technology coupling (or vendor lock-in to be more blunt) and as a framework designer it's a great place to be at. But those that value design and sound architectural principles look at this differently and use decoupling in order to mitigate the risks such coupling brings to the table. Adhering to SOLID principles really doesn't take that much more effort and in the end it'll pay dividents. 
+
+A colleague of mine actually made the best analogy: there are some people that can be trusted with chef knives. What happened with this example and the REST support for Spring Data is that they are throwing a entire box of knives in the public by posting an innocent example. There could be a couple of master chefs in the public that can make awesome stuff with those but the sad reality will be that a lot of people will be losing fingers. I don't like seeing people losing their fingers. 
+
+To conclude: don't be lazy. Don't compromise on design principles just for the sake of speed of development. Don't use Spring Data in your REST layer how enticing it may be, but rather use it in your persistence layer (no really, use it there!). Your future self will love you for it. There's enough bad code being written as is, let's not make it any easier for people to add to the pile, please. For those that say that Spring Data and it's REST support saves them time: I'm willing to bet it'll take you about 5 minutes longer to do it in a way that makes sense from a design standpoint, and it'll be a lot more flexible. That's a good investment in my book. 
+
+
