@@ -30,4 +30,10 @@ Gluon apparently has gained a lot of support from the Devoxx people and the Devo
 
 Sorry Gluon, you lost me. Perhaps you are superior to other frameworks like Ionic or Titanium. As a Java developer, I really, really wanted to make this work. But not getting the most basic example to work, and not having any documentation to find out what is going on, I can't see past this. I'll either be developing my apps in Ionic or going completely native if needed, I already know Kotlin and Swift doesn't look that hard. I already got a Swift Hello World running in an iPhone simulator, took me about 3 minutes. Who knew mobile development could be so fast?
 
+*Edit:*
+
+So thanks to a reply on a tweet I got everything to compile (apparently you need to give 4 Gb to Gradle for it to work...) and I got my basic example to run in the simulator. That said, my first impression of the Gluon app was not really that positive, at least in the simulator. Compared to Ionic, where I also have a sample application to play with, and which does way more than my Gluon sample, Gluon is slow. It feels incredibly laggy, especially compared against the snappy response I get when runnning Ionic in the simulator. 
+
+But I have a working example, so I might give Gluon still a go. To be continued.
+
 
