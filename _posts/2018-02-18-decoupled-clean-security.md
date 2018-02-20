@@ -38,7 +38,6 @@ Now that we have the annotation and its usage in place, we can create the aspect
 class InvoiceViewRestrictionAspect {
     @Around("@annotation(InvoiceViewRestriction)")
     fun handle(pjp: ProceedingJoinPoint) : Any {
-        // check whether user has invoice viewing rights
         if(hasInvoiceViewingRights(getCurrentUser()) {
             return pjp.proceed()
         } else {
@@ -46,7 +45,7 @@ class InvoiceViewRestrictionAspect {
         }
     }
 
-    ...
+    ... // implementation hasInvoiceViewingRights
 }
 {% endhighlight %}
 
@@ -58,6 +57,14 @@ Without aspects, you can achieve the same thing using domain services. You defin
 
 {% highlight kotlin %}
 interface AccessManager {
+    fun <R> withPermission(permission: Permission, block: () -> R) : R {
+        if(currentUserHasAccessTo(permission)) {
+            return block.invoke()
+        } else {
+            throw AccessDeniedDomainException("Access is denied")
+        }
+    }
+
     fun currentUserHasAccessTo(permission: Permission) : Boolean
 }
 {% endhighlight %}
@@ -74,14 +81,10 @@ Instead of using a domain annotation in your use cases, you'll now use a domain 
 
 {% highlight kotlin %}
 class ViewInvoiceImpl(accessManager: AccessManager) : ViewInvoice {
-
     fun viewInvoice(request: Request) : Response {
-        if(accessManager.currentUserHasAccessTo(Permission.VIEW_INVOICE)) {
+        accessManager.withPermission(Permission.VIEW_INVOICE) {
             ...
-        } else {
-            throw AccessDeniedException("Access is denied")
         }
-        ...
     }
 }
 {% endhighlight %}
@@ -89,16 +92,18 @@ class ViewInvoiceImpl(accessManager: AccessManager) : ViewInvoice {
 In the infrastructure layer, now instead of implementing an aspect to handle the annotation, you implement the domain service:
 
 {% highlight kotlin %}
-class AccessManagerImpl {
+class AccessManagerImpl : AccessManager {
     fun currentUserHasAccessTo(permission: Permission) : Boolean {
         ...
     }
 }
 {% endhighlight %}
 
-Here you'll use the same concepts as you would implementing the AspectJ advice, checking whether the current user has a certain permission. 
+Here you'll use the same concepts as you would implementing the AspectJ advice, checking whether the current user has a certain permission. The `AccessManager` here is quite generic, using an enum, but you could make it as domain-specific as you want, i.e. `accessManager.withViewInvoicePermission { ... }`, the choice is up to you. You can also choose to expand this concept to add ACL-like properties to your access manager by create an abstraction for an ACL secured resource and passing that abstraction to the access manager to check whether a certain user has access to a specific domain object instance. 
 
 When you're trying to keep your architecture as clean as possible, you'll striving towards putting all technological dependencies (and thus framework
-decision) to the outside of your system, i.e. your infrastructure layers. In many cases, this means writing abstractions in your domain and application layers to describe what you want from a behavioral standpoint and leaving it up to the infrastructure layers to decide on how that behavior should be implemented.
+decision) to the outside of your system, i.e. your infrastructure layers. In many cases, this means writing abstractions in your domain and application layers to describe what you want from a behavioral standpoint and leaving it up to the infrastructure layers to decide on how that behavior should be implemented. In addition, by creating those abstractions, you can focus on your security requirements from a business perspective instead of being constrained by the technical limitations of a certain framework. In other words, you're decoupled from the technical details.
 
 With this approach you can declaratively describe what you want with regards to security and delay the implementation to a later point in time, for example by first implementing a naive, permissive security. You can then later, at any time, choose to replace that implementation with a more complete version using whatever framework you want, without having to worry about your business code being affected by that change. 
+
+*Edit*: Thanks to the input from Darijan Jankovic, the non-annotation example has been optimized to use more a more functional style using higher order functions. Thanks Darijan!
