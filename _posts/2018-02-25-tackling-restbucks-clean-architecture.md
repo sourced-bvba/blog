@@ -1,7 +1,7 @@
 ---
 layout: post
 category : article
-title: "Tacking Restbucks with Clean Architecture, episode 1"
+title: "Tackling Restbucks with Clean Architecture, episode 1"
 comments: true
 tags : [technical]
 ---
