@@ -18,7 +18,12 @@ class Order(val id: String, val customer: String, status: Status, val items: Lis
     var status : Status = status
         private set
 
-    fun create() : Order {
+    fun calculateCost() {
+        cost = BigDecimal(Random().nextInt(20))
+    }
+
+    fun create() {
+        calculateCost()
         return OrderCreated(this).sendEvent()
     }
 
@@ -43,39 +48,34 @@ class Order(val id: String, val customer: String, status: Status, val items: Lis
         }
     }
 }
+
+data class OrderItem(val product: String, val quantity: Int, val size: Size, val milk: Milk)
 {% endhighlight %}
 
 As you can see, this domain object's behavioral methods don't only change their state and check the logic, but also send events at appropriate. So from an event perspective, there are 4 events that can happens in the system.
 
 {% highlight kotlin %}
-class OrderCreated(val order: Order) : DomainEvent<Order> {
-}
-
-data class OrderDeleted(val id: String) : DomainEvent<Unit> {
-}
-
-class OrderDelivered(val id: String) : DomainEvent<Unit> {
-}
-
-class OrderPaid(val id: String) : DomainEvent<Unit> {
-}
+data class OrderCreated(val order: Order) : DomainEvent 
+data class OrderDeleted(val id: String) : DomainEvent
+data class OrderDelivered(val id: String) : DomainEvent
+data class OrderPaid(val id: String) : DomainEvent
 {% endhighlight %} 
 
 With regards to using some sort of event infrastructure framework, there are a couple of options. Axon for example is a quite good framework for building an event-driven application. I however use a very simple implementation that does most of the heavy lifting.
 
 {% highlight kotlin %}
-interface DomainEvent<T> {
-    fun sendEvent() : T {
-        return EventPublisher.Locator.eventPublisher.publishEvent(this)
+interface DomainEvent {
+    fun sendEvent() {
+        EventPublisher.Locator.eventPublisher.publishEvent(this)
     }
 }
 
-interface DomainEventConsumer<T: Any, E : DomainEvent<T>> {
-    fun consume(event: E) : T
+interface DomainEventConsumer<E : DomainEvent> {
+    fun consume(event: E)
 }
 
 interface EventPublisher {
-    fun <T> publishEvent(event: DomainEvent<T>) : T
+    fun publishEvent(event: DomainEvent)
 
     object Locator {
         lateinit var eventPublisher: EventPublisher
@@ -128,7 +128,7 @@ class SpringDomainEventConsumerRegistrar(val applicationEventMulticaster: Applic
 }
 {% endhighlight %}
 
-However, you can just create a very naive implementation to make sure everything still works.
+However, you can just create a very naive implementation to make sure everything still starts.
 
 {% highlight kotlin %}
 @Configuration
@@ -142,14 +142,7 @@ class DomainConfiguration {
 }
 
 class MockEventPublisher : EventPublisher {
-    override fun <T> publishEvent(event: DomainEvent<T>): T {
-        if(event is OrderCreated) {
-            var order = (event as OrderCreated).order
-            order.cost = BigDecimal(10)
-            return order as T
-        } else {
-            return Unit as T
-        }
+    override fun publishEvent(event: DomainEvent) {
     }
 }
 {% endhighlight %}
@@ -170,7 +163,8 @@ Now that we have our domain implemented, we can use this to implement the use ca
 class CreateOrderImpl : CreateOrder {
     override fun <T> create(request: CreateOrderRequest, presenter: (CreateOrderResponse) -> T): T {
         val order = request.toOrder()
-        return presenter(order.create().toResponse())
+        order.create()
+        return presenter(order.toResponse())
     }
 
     fun CreateOrderRequest.toOrder() : Order {
