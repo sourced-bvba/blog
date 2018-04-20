@@ -65,11 +65,11 @@ class WebsocketJsonRpcController(productJsonRpcService: ProductJsonRpcService,
 }
 {% endhighlight %}
 
-If a web socket is opened on `http://localhost:8080/websocket/json-rpc-request/product` and send a valid JSON-RPC payload, the correct method will be called on the service and the message will be send to a user reply channel. The reason for this is that this way, only the user that has sent the request will receive the reply. 
+If a web socket is opened on `http://localhost:8080/websocket/json-rpc-request/product` and you send a valid JSON-RPC payload, the correct method will be called on the service and the message will be sent to a user reply channel. The reason for this is by specifying this, only the user that has sent the request will receive the reply. 
 
 And that's it. But how would you use this in practice?
 
-Well, I first needed to build some kind of client that was able to call these kinds of services. What I came up with was this.
+Well, first I needed to build some kind of client that was able to call these kinds of services. What I came up with was this, which is a kind of skeleton for generic JSON-RPC Websocket cients.
 
 {% highlight kotlin %}
 abstract class JsonRpcClientService(val session: StompSession, val objectMapper: ObjectMapper, replyChannel: String) : StompFrameHandler {
