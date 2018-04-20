@@ -159,7 +159,7 @@ class ProductServiceClient(session: StompSession, objectMapper: ObjectMapper) : 
 
 This will send a message on `/json-rpc-request/product`, while listening for the reply on `/user/json-rpc-reply/product`. 
 
-This code requires you to build a `StompSession`. If you want to know how to create a one, you can do something like this.
+This code requires you to build a `StompSession`. If you want to know how to create one, you can do something like this.
 
 {% highlight kotlin %}
 private fun createSession(objectMapper: ObjectMapper): StompSession {
