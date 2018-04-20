@@ -24,7 +24,7 @@ Now, if I like a training and my calendar allows it, chances are I'm going. I've
 
 If you want to do a training as an employee, there probably needs to be a connection between your current job and the training. Otherwise you'll get quite hard questions on why you should do the training. For example, I'll be following a Management 3.0 course in a couple of months. Why? Because I got a small teaser of the course and it sparked my interest. I might have been able to sell this to my manager in the past, but it would have been an uphill battle. 
 
-Being able to choose whatever you feel you need in order to grow professionally without having the sell the idea to anyone else besides yourself and your professionl bank account is liberating to a level I never imagined possible.
+Being able to choose whatever you feel you need in order to grow professionally without having the sell the idea to anyone else besides yourself and your professional bank account is liberating to a level I never imagined possible.
 
 ## No jealousy
 
