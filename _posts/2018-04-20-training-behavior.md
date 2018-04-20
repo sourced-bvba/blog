@@ -30,7 +30,7 @@ Being able to choose whatever you feel you need in order to grow professionally 
 
 You know the feeling. Your colleague got selected to go to JavaOne and you're stuck in the office. A month later they do a presentation on how fantastic the trip was and how they rented a sports car to drive through Silicon Valley, and share some of the knowledge they gained. Perhaps, maybe, you'll get the chance next year.
 
-It's very gratifying to go 'Screw you!', book a ticket and go yourself. And book a ticket for Spring One. And that great developer conference in New York. I never need to be jealous anymore at someone because they get to go to a conference and I don't. If I decide not to go, it's because I choose not to gp. 
+It's very gratifying to go 'Screw you!', book a ticket and go yourself. And book a ticket for Spring One. And that great developer conference in New York. I never need to be jealous anymore at someone because they get to go to a conference and I don't. If I decide not to go, it's because I choose not to go. 
 
 ## Conclusion
 
