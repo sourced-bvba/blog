@@ -32,6 +32,10 @@ You know the feeling. Your colleague got selected to go to JavaOne and you're st
 
 It's very gratifying to go 'Screw you!', book a ticket and go yourself. And book a ticket for Spring One. And that great developer conference in New York. I never need to be jealous anymore at someone because they get to go to a conference and I don't. If I decide not to go, it's because I choose not to go. 
 
+## No more being too late
+
+You find this awesome training which you want to follow. So you put in a request to your management. A month later you finally get the green light... only to discover that the training is now fully booked. If this happens right now, the only person to blame is myself for dragging the decision along. If I see a training that I really want to follow, I don't need permission. I just book the training then and there. 
+
 ## Conclusion
 
 Becoming an independent contractor changed my habits regarding training drastically, more than anything else. For the first time in 10 years, I'm happy to look at my development path, both in the past and the future. I'm totally in control. I just wish the companies I joined adopted that same amount of freedom. Perhaps less people would leave and become independent contractors.
