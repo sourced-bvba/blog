@@ -198,4 +198,6 @@ class UseCaseConfiguration
 
 Running this application will yield you the REST API you can already consume. Next up: implementing the application layer and the domain.
 
-
+[Part 2 here] ({% post_url 2018-03-04-tackling-restbucks-clean-architecture.2 %})
+[Part 3 here] ({% post_url 2018-03-05-tackling-restbucks-clean-architecture.3 %})
+[Part 4 here] ({% post_url 2018-05-17-tackling-restbucks-clean-architecture.4 %})

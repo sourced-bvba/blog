@@ -6,6 +6,8 @@ comments: true
 tags : [technical]
 ---
 
+[Part 1 here] ({% post_url 2018-02-25-tackling-restbucks-clean-architecture %})
+
 In the first part we tackled creating the necessary use cases and the REST interface for the Restbucks application. In this episode we're going to implement the application layer and the communication with the domain layer. The domain layer is where most of of the logic of your application will reside. It enforces the business rules of your domain and defines the data structures and behavior of that domain. The implementation role of the application layer is to retrieve domain entities and perform the necessary domain operations in order to fulfill the use case.
 
 In this example, we'll use events to signal the wanted domain behavior, so we'll end up with an event-driven application. This will allow us to decouple the domain behavior from the implementation details later on. For example, instead of saving an entity through a repository, we'll send an `SomeEntitySaved` event, which can then be handled later on in the infrastructure layer handling the persistence. This is one way of doing it, the more direct approach is to have interfaces in the domain layer that are implemented later on in the persistence layer. How you choose to build your application is completely up to you.
@@ -237,3 +239,6 @@ class MockOrderGateway : OrderGateway {
 {% endhighlight %}
 
 So now we have implemented the web layer, the entire application layer and the domain layer. All that's left is implementing the persistence layer, which I'll cover in the next episode.
+
+[Part 3 here] ({% post_url 2018-03-05-tackling-restbucks-clean-architecture.3 %})
+[Part 4 here] ({% post_url 2018-05-17-tackling-restbucks-clean-architecture.4 %})

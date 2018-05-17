@@ -23,6 +23,3 @@ If you look at the code in a typical clean architecture project, it's apparent t
 The concept of package by component, for example `be.sourcedbvba.someapp.somecomponent`, doesn't really apply to me when you're using Kotlin, because of the fact that it doesn't have a package visibility modifier, which makes the entire thing quite useless. But making everything public isn't great either and by using the `internal` modifier, you can limit the visibility of your classes in a modular application quite nicely. 
 
 With Java 9 true modules, you can certainly achieve a higher level of granularity, but with `internal`, you can go a long way in order to ensure some modular encapsulation. If you haven't seen Simon's talk on modular monolith, be sure to have a look at it, you can find it on YouTube. 
-
-
-
