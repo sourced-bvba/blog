@@ -6,7 +6,7 @@ comments: true
 tags : [technical]
 ---
 
-[Part 1 here] ({% post_url 2018-02-25-tackling-restbucks-clean-architecture %})
+[Part 1 here]({% post_url 2018-02-25-tackling-restbucks-clean-architecture %})
 
 In the first part we tackled creating the necessary use cases and the REST interface for the Restbucks application. In this episode we're going to implement the application layer and the communication with the domain layer. The domain layer is where most of of the logic of your application will reside. It enforces the business rules of your domain and defines the data structures and behavior of that domain. The implementation role of the application layer is to retrieve domain entities and perform the necessary domain operations in order to fulfill the use case.
 
