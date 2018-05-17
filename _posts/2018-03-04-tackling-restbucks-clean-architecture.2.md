@@ -240,5 +240,5 @@ class MockOrderGateway : OrderGateway {
 
 So now we have implemented the web layer, the entire application layer and the domain layer. All that's left is implementing the persistence layer, which I'll cover in the next episode.
 
-[Part 3 here] ({% post_url 2018-03-05-tackling-restbucks-clean-architecture.3 %})
-[Part 4 here] ({% post_url 2018-05-17-tackling-restbucks-clean-architecture.4 %})
+[Part 3 here]({% post_url 2018-03-05-tackling-restbucks-clean-architecture.3 %})
+[Part 4 here]({% post_url 2018-05-17-tackling-restbucks-clean-architecture.4 %})

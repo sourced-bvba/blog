@@ -1,124 +1,102 @@
 ---
 layout: post
 category : article
-title: "Tackling Restbucks with Clean Architecture, episode 3"
+title: "Tackling Restbucks with Clean Architecture, episode 4"
 comments: true
 tags : [technical]
 ---
 
-In the previous 2 episodes we built the application and domain layer, and built the infrastructure layer for exposing a couple of REST endpoints. Now we're going to the other end of our application and look at how we can persist the data in our system. In the domain layer, we're sending our events and we have a gateway to implement. For this example, I'll use JPA and Spring Data (using Hibernate as the implementation), but you're free to choose whatever technology you're the most comfortable with.
+[Part 1 here]({% post_url 2018-02-25-tackling-restbucks-clean-architecture %})
+[Part 2 here]({% post_url 2018-03-04-tackling-restbucks-clean-architecture.2 %})
+[Part 3 here]({% post_url 2018-03-05-tackling-restbucks-clean-architecture.3 %})
 
-First of all, we need to define our JPA entities.
+It took a while, but here's the last installment of the series on how to implement a RESTful application, using Restbucks as the example.
 
-{% highlight kotlin %}
-@Entity
-data class OrderEntity(@Id val id: String,
-                       val customerName: String,
-                       @Enumerated var status: Status,
-                       val cost: BigDecimal,
-                       @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
-                       @JoinColumn(name = "order_id")
-                       val items: List<OrderItemEntity>)
+In the previous examples, I've shown you how you can implement the entire service from the REST controller to the backing database, using a domain and use cases in betweem. But some of the limitations of Clean Architecture make certain aspects of an application not so straightforward at first glance. Let's take transactionality for example.
 
-@Entity
-data class OrderItemEntity(@GeneratedValue(generator = "UUID")
-                           @GenericGenerator(
-                                   name = "UUID",
-                           strategy = "org.hibernate.id.UUIDGenerator")
-                           @Id val id: String?,
-                           val product: String,
-                           val quantity: Int,
-                           @Enumerated val size: Size,
-                           @Enumerated val milk: Milk)
-{% endhighlight %}
+In standard Spring applications, you'd probably put a dependency on `spring-tx` somewhere in your code. The problem with our approach is that you probably want to have your application API as the transactional boundary of your application. As you may remember, the application layer or domain layer should not have any technical framework dependencies and Spring is no exception there. 
 
-(small tip: Don't call your entities Order, SQL really doesn't like that and you'll hate yourself every time you need to use backticks because you wanted to use a reserved SQL keyword as a table name)
+So how do we solve this conundrum?
 
-With Spring Data JPA, building a basic CRUD repository is a breeze.
+Why, AOP off course! Aspects allow to write concerns in different modules, which is ideal for this use, and allow us to defer these concerns to the edge of our appliction, which is exactly where we want our technical framework dependencies to be. So we build a new infrastructure layer, let's call it `infra-transaction`. 
+
+The new transaction layer will depend on 3 things: the application API layer (so that it can access the annotation), the Spring transaction API (`spring-tx`) and the necessary libraries for AOP (I'm using `spring-boot-starter-aop`). We start off by writing an aspect.
 
 {% highlight kotlin %}
-interface OrderJpaRepository : JpaRepository<OrderEntity, String> 
-{% endhighlight %}
+@Aspect
+class TransactionalUseCaseAspect(private val transactionalUseCaseExecutor: TransactionalUseCaseExecutor) {
 
-One line of code, so much power. Have I mentioned yet I love Spring Data (not Spring Data REST, no, the persistence part)?
-
-And now we have all the basic components to build our event handlers and our `OrderGateway` implementation. We'll start with the latter.
-
-{% highlight kotlin %}
-@Component
-class JpaOrderGateway(val orderJpaRepository: OrderJpaRepository) : OrderGateway {
-    override fun getOrder(orderId: String): Order {
-        return orderJpaRepository.getOne(orderId).toDomain()
+    @Pointcut("@within(useCase)")
+    fun inUseCase(useCase: UseCase) {
     }
 
-    override fun getOrders(): List<Order> {
-        return orderJpaRepository.findAll().map { it.toDomain() }
-    }
-
-    fun OrderEntity.toDomain() : Order {
-        return Order(id, customerName, status, items.map { it.toDomain() })
-    }
-
-    fun OrderItemEntity.toDomain() : OrderItem {
-        return OrderItem(product, quantity, size, milk)
+    @Around("inUseCase(useCase)")
+    fun useCase(proceedingJoinPoint: ProceedingJoinPoint, useCase: UseCase): Any? {
+        return transactionalUseCaseExecutor.executeInTransaction(Supplier { proceedingJoinPoint.proceed() })
     }
 }
 {% endhighlight %}
 
-Not much to it, really, you need to do some translation between the persistent entities and the domain model, but for the rest, it's very straightforward (and clean). Once again, Kotlin's extension functions really help to make the code a lot more readable. So now that we have the read part handling, now we'll tackle the write section by handling the events.
+This will match all the public methods in the use cases of the application, which is what we want. This aspect uses a `TransactionalUseCaseExecutor` which looks like this.
 
 {% highlight kotlin %}
-@Component
-class OrderCreatedConsumer(val orderJpaRepository: OrderJpaRepository) : DomainEventConsumer<OrderCreated> {
-    override fun consume(event: OrderCreated) {
-        val orderEntity = event.order.toJpa()
-        orderJpaRepository.save(orderEntity)
-    }
-
-    fun Order.toJpa() : OrderEntity {
-        return OrderEntity(id, customer, status, cost, items.map { it.toJpa() })
-    }
-
-    fun OrderItem.toJpa() : OrderItemEntity {
-        return OrderItemEntity(null, product, quantity, size, milk)
-    }
-}
-
-
-@Component
-class OrderDeletedConsumer(val orderJpaRepository: OrderJpaRepository) : DomainEventConsumer<OrderDeleted> {
-    override fun consume(event: OrderDeleted) {
-        orderJpaRepository.deleteById(event.id)
-    }
-}
-
-@Component
-class OrderDeliveredConsumer(val orderJpaRepository: OrderJpaRepository) : DomainEventConsumer<OrderDelivered> {
-    override fun consume(event: OrderDelivered) {
-        val order = orderJpaRepository.getOne(event.id)
-        order.status = Status.DELIVERED
-        orderJpaRepository.save(order)
-    }
-}
-
-@Component
-class OrderPaidConsumer(val orderJpaRepository: OrderJpaRepository) : DomainEventConsumer<OrderPaid> {
-    override fun consume(event: OrderPaid) {
-        val order = orderJpaRepository.getOne(event.id)
-        order.status = Status.PAID
-        orderJpaRepository.save(order)
+open class TransactionalUseCaseExecutor {
+    @Transactional
+    open fun <T> executeInTransaction(execution: Supplier<T>): T {
+        return execution.get()
     }
 }
 {% endhighlight %}
 
-Now, when you're implementing the events, you sometimes feel that the events really end up in very similar implementations. For example, `OrderPaid` and `OrderDelivered` could be combined in `OrderStatusChanged` if you added a `Status` to the event. However, driving your event design through your implementation may not always be the best idea. For example, what if you wanted another consumer to pick up on `OrderDelivered` and do something particular for that event. If you combined the events, you'd have to add an `if` structure to handle such a case. But as with all things, this is open to interpretation and compromise and there's no black or white answer here.
+This class is annotated with Spring's `@Transactional`, so it will correctly start a transaction. You could choose to use a lower level approach and use `TransactionTemplate`, but in this case, this approach is sufficient.
 
-And that's it. We've now implemented Restbucks in a clean and decoupled manner. 
+To finish, I create a Spring configuration file to define the beans and necessary functionality in order to get the AOP working.
 
-As you may have noticed by now, implementing infrastructure layers really don't account for much of the work. You'll be spending way more time in your application and domain layers, as the value for the customer really lies within those. Don't get me wrong, you do need the infrastructure layers to make everything work, but they should be easily interchangeable. For example, do the exercise to swap out one of the infrastructure layers. If you've decoupled correctly, you shouldn't feel the need to change the domain or application layer in order to do so. If you do, you've either made a compromise that has accrued interest or some framework dependency was introduced into your core layers. 
+{% highlight kotlin %}
+@Configuration
+@EnableAspectJAutoProxy
+@EnableTransactionManagement
+class UseCaseTransactionConfiguration {
+    @Bean
+    fun useCaseTransactionAspect(transactionTemplate: TransactionalUseCaseExecutor) = TransactionalUseCaseAspect(transactionTemplate)
 
-In the end, I hope I've shown you that building an application in a way that's in line with what Clean Architecture is trying to communicate to each and everyone of us really isn't that much more work. It's an investment that will pay off in the future. Or to quote Robert C. Martin:
+    @Bean
+    fun transactionalUseCaseExecutor() = TransactionalUseCaseExecutor()
+}
+{% endhighlight %}
 
-> The higher the quality, the faster you go. The only way to go fast is to go well.
+If we add this module to the main partition and start the application, the use cases with the `@UseCase` annotation will now be transactional, without even having touched the use-case classes! 
 
-In the last episode, I'll show you some cross-cutting corners like validation and transactionality, and how to integrate those without introducing technical framework dependencies in your core layers. 
+But we can do more with this, for example validation. What if we wanted to validate the argument of the use case (since we use a request/response approach, we assume here that a use case has either a single argument or none)? Then we can write an aspect like this:
+
+{% highlight kotlin %}
+@Aspect
+internal class UseCaseValidatonAspect(val validator: Validator) {
+
+    @Pointcut("@within(useCase)")
+    fun inUseCase(useCase: UseCase) {
+    }
+
+    @Around("inUseCase(useCase)")
+    fun useCase(proceedingJoinPoint: ProceedingJoinPoint, useCase: UseCase): Any? {
+        if(proceedingJoinPoint.args.size > 1) {
+            validateUseCaseArgument(proceedingJoinPoint.args[0]);
+        }
+        return proceedingJoinPoint.proceed()
+    }
+
+    private fun validateUseCaseArgument(arg: Any) {
+        val validate = validator.validate(arg)
+        if(validate.isNotEmpty()) {
+            throw ConstraintViolationException(validate)
+        }
+    }
+}
+{% endhighlight %} 
+
+However, this may require you to add the `annotation-api` dependency on your application layer. It's not really a technical dependency, as the library solely consists of annotations, but if you truly want to decouple your validation definition, you'd have to find a framework that allows you to do so independently from the class it's validating. I actually made [something like this](https://gitlab.com/lievendoclo/kval-dsl) because of this very reason. 
+
+In short, aspects and AOP allow you to decouple functionality from the layers and defer technical decisions to somewhere outside of your application or domain. 
+
+I hope this series has shown you that you can easily write a RESTful application that adheres to clean architectural principles and that you don't need to [couple your REST to your backend with a single model](https://github.com/olivergierke/spring-restbucks). 
+

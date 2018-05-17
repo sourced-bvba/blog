@@ -6,8 +6,8 @@ comments: true
 tags : [technical]
 ---
 
-[Part 1 here] ({% post_url 2018-02-25-tackling-restbucks-clean-architecture %})
-[Part 2 here] ({% post_url 2018-03-04-tackling-restbucks-clean-architecture.2 %})
+[Part 1 here]({% post_url 2018-02-25-tackling-restbucks-clean-architecture %})
+[Part 2 here]({% post_url 2018-03-04-tackling-restbucks-clean-architecture.2 %})
 
 In the previous 2 episodes we built the application and domain layer, and built the infrastructure layer for exposing a couple of REST endpoints. Now we're going to the other end of our application and look at how we can persist the data in our system. In the domain layer, we're sending our events and we have a gateway to implement. For this example, I'll use JPA and Spring Data (using Hibernate as the implementation), but you're free to choose whatever technology you're the most comfortable with.
 
@@ -126,4 +126,4 @@ In the end, I hope I've shown you that building an application in a way that's i
 
 In the last episode, I'll show you some cross-cutting corners like validation and transactionality, and how to integrate those without introducing technical framework dependencies in your core layers. 
 
-[Part 4 here] ({% post_url 2018-05-17-tackling-restbucks-clean-architecture.4 %})
+[Part 4 here]({% post_url 2018-05-17-tackling-restbucks-clean-architecture.4 %})
