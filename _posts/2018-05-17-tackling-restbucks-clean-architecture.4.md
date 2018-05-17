@@ -94,7 +94,7 @@ internal class UseCaseValidatonAspect(val validator: Validator) {
 }
 {% endhighlight %} 
 
-However, this may require you to add the `annotation-api` dependency on your application layer. It's not really a technical dependency, as the library solely consists of annotations, but if you truly want to decouple your validation definition, you'd have to find a framework that allows you to do so independently from the class it's validating. I actually made [something like this](https://gitlab.com/lievendoclo/kval-dsl) because of this very reason. 
+However, this may require you to add the `validation-api` dependency on your application layer. It's not really a technical dependency, as the library solely consists of annotations, but if you truly want to decouple your validation definition, you'd have to find a framework that allows you to do so independently from the class it's validating. I actually made [something like this](https://gitlab.com/lievendoclo/kval-dsl) because of this very reason. 
 
 In short, aspects and AOP allow you to decouple functionality from the layers and defer technical decisions to somewhere outside of your application or domain. 
 
