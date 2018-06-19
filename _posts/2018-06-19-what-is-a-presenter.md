@@ -100,7 +100,7 @@ class Controller(useCase: UseCase) {
 }
 {% endhighlight %}
 
-There is a way to use lambdas if you pass through functions as paramaters to the receiver and call those functions in the implementation, but I wouldn't recommend it as that approach has some serious drawbacks. I was going to add the implementation here as well, but in the end decided it really wasn't worth showing a bad idea.
+There is a way to use lambdas if you pass through functions as parameters to the receiver and call those functions in the implementation, but I wouldn't recommend it as that approach has some serious drawbacks. I was going to add the implementation here as well, but in the end decided it really wasn't worth showing a bad idea.
 
 So the question is, what is the correct usage of a presenter? Is it a mapper, or is it a receiver? Well, in my opinion, both. As Uncle Bob said in his tweet, the devil is in the details.
 
