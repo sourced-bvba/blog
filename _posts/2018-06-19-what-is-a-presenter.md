@@ -28,6 +28,7 @@ interface Mapper<T> {
 class UseCaseImpl {
     override <T> fun doSomething(presenter: Presenter<T>) : T {
         // do some stuff and get a UseCaseResponse
+        
         return presenter.present(response)
     }
 }
@@ -65,6 +66,7 @@ class UseCaseImpl {
     override fun doSomething(presenter: Receiver) {
         try {
             // do some stuff and get a UseCaseResponse
+
             presenter.success(response)
         } catch (ex: BusinessException) {
             presenter.failure(ex.reason)
