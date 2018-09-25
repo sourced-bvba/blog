@@ -6,7 +6,7 @@ comments: true
 tags : [java]
 ---
 
-For years now there has been a lot of animosity between the Spring community and the Java EE community. This goes back to the beginning years of the Spring framework where the founder, Rod Johnson, fired off a couple of nasty shots towards the Java EE community. While I don't approve of his methods, one cannot deny that the Java EE ecosystem at that time really was a mess and really not much fun to work with. Even Java EE supporters acknowledge that fact. 
+For years now there has been a lot of animosity between the Spring community and the Java EE community. This goes back to the beginning years of the Spring framework. ONe cannot deny that the Java EE ecosystem at that time really was a mess and really not much fun to work with. Even Java EE supporters acknowledge that fact. 
 
 But times have changed and so have the frameworks. Java EE 7 is arguably the best release of the EE specification to date and to be honest, the Spring framework has contributed a lot to the progress Java EE has made and vice versa. CDI and the Spring DI container are very similar and the EJB3 specification and Spring beans also have a lot in common. It's a symbiosis that has furthered the Java community as a whole and as such we're still the most popular server side programming platform. 
 
