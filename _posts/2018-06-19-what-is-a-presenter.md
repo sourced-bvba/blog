@@ -16,7 +16,7 @@ For most concepts, we have a clear understanding by now. Granted, the terms inte
 
 When a presenter is interpreted as a mapper, the presenter has a return value and the use case mimics that return value. In Java, you would do this like this:
 
-{% highlight kotlin %}
+```kotlin
 interface UseCase {
     <T> fun doSomething(presenter: Mapper<T>) : T
 }
@@ -32,17 +32,17 @@ class UseCaseImpl {
         return presenter.present(response)
     }
 }
-{% endhighlight %}
+```
 
 In other words, the use case would be called and it would map the response through the presenter, returning the presented value. 
 
-{% highlight kotlin %}
+```kotlin
 class Controller(useCase: UseCase) {
     fun doSomething() : String {
         return useCase.doSomething({ it.value }) 
     }
 }
-{% endhighlight %}
+```
 
 In a lot of cases, this would probably work fine. However, the problem comes when you need to handle error situations. When using the approach above, you have a single return value and only one way to return it. What happens if there is a business exception? A presenter only handles the happy scenario...
 
@@ -52,7 +52,7 @@ Uncle Bob wrote an interesting example called Hunt the Wumpus. This contained so
 
 So what would our example look like?
 
-{% highlight kotlin %}
+```kotlin
 interface UseCase {
     fun doSomething(presenter: Receiver)
 }
@@ -73,13 +73,13 @@ class UseCaseImpl {
         }
     }
 }
-{% endhighlight %}
+```
 
 The use case is no longer relying on exception in order to handle business error flows. The presenter contract clearly says which issues can happen and should be handled gracefully. Off course you can still have runtime exceptions, but those bubble up and get handled generically. You may also have noticed that there are no generics, nor are there return values in the interface or receive
 
 On the controller side, you unfortunately now lose the ability to use lambdas. 
 
-{% highlight kotlin %}
+```kotlin
 class JsonReceiver : Receiver {
     var result : ResponseEntity<*>
         private set
@@ -100,7 +100,7 @@ class Controller(useCase: UseCase) {
         return presenter.result
     }
 }
-{% endhighlight %}
+```
 
 There is a way to use lambdas if you pass through functions as parameters to the receiver and call those functions in the implementation, but I wouldn't recommend it as that approach has some serious drawbacks. I was going to add the implementation here as well, but in the end decided it really wasn't worth showing a bad idea.
 
