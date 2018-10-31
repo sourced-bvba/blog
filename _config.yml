@@ -8,7 +8,6 @@ baseurl: ""
 url: "https://blog.sourced-bvba.be/"
 twitter_username: lievendoclo
 github_username:  lievendoclo
-facebook_username:  LievenDoclo
 email_username:  lieven@sourced-bvba.be
 
 # Build settings
@@ -18,4 +17,4 @@ permalink: pretty
 paginate: 5
 exclude: ["less","node_modules","Gruntfile.js","package.json","README.md"]
 
-gems: [jekyll-paginate, jekyll-feed]
+plugins: [jekyll-paginate, jekyll-feed]

@@ -6,7 +6,7 @@ comments: true
 tags : [java]
 ---
 
-In an [earlier post](http://www.insaneprogramming.be/blog/2014/08/19/hystrix-spring-boot) I showed how easy it is to integrate Hystrix into a Spring Boot application. Now I'm going to show you a neat trick which combines the health indicator endpoint in Spring Boot and the metrics provided by Hystrix.<!--more-->
+In an [earlier post](2014-08-19-hystrix-spring-boot.md) I showed how easy it is to integrate Hystrix into a Spring Boot application. Now I'm going to show you a neat trick which combines the health indicator endpoint in Spring Boot and the metrics provided by Hystrix.<!--more-->
 
 Hystrix has a built-in system to query the metrics that drive the framework. For example you can query the metrics of each command such as the mean execution time or whether the circuit breaker for that command has tripped. And it's that last one that is very interesting to the health indicator of your application.
 

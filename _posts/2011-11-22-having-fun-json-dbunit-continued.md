@@ -5,7 +5,7 @@ title: "Having fun with JSON and DbUnit, continued"
 tags : [testing, database]
 ---
 
-The beauty of a blog like this is the fact that people read the articles and take the ideas in them to the next level. And that’s exactly [what Dan Haywood did](http://danhaywood.com/2011/12/20/db-unit-testing-with-dbunit-json-hsqldb-and-junit-rules/).
+The beauty of a blog like this is the fact that people read the articles and take the ideas in them to the next level. And that’s exactly [what Dan Haywood did](http://www.danhaywood.com/2011/12/20/db-unit-testing-with-dbunit-json-hsqldb-and-junit-rules/).
 
 He reused my JSONDataSet idea and combined it with JUnit 4′s new Rule system to add configurable dataset loading to individual test methods. It’s a basic, yet very functional implementation. But I thought, what the heck, let’s take his idea a step further.
 

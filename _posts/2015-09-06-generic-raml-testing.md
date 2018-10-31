@@ -6,7 +6,7 @@ comments: true
 tags : [java]
 ---
 
-In an [earlier post](http://www.insaneprogramming.be/blog/2014/08/18/rest-documentation-specification) I showed you how to create contract-driven REST services using RAML as a specification framework. However, the RAML tester library does not limit itself to being able to test Spring MVC controllers. You can also use it to test any REST API and check whether it adheres to a RAML specification.<!--more-->
+In an [earlier post](2014-08-18-rest-documentation-specification.md) I showed you how to create contract-driven REST services using RAML as a specification framework. However, the RAML tester library does not limit itself to being able to test Spring MVC controllers. You can also use it to test any REST API and check whether it adheres to a RAML specification.<!--more-->
 
 ## The CheckingWebTarget class
 

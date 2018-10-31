@@ -6,7 +6,7 @@ comments: true
 categories: 'java'
 ---
 
-Recently, on of [my earlier blog posts](http://www.insaneprogramming.be/blog/2010/01/01/maven-stop-ranting/)  got published on Javalobby. The reactions I got were slightly different than the ones I got when I first wrote the article. For one, Gradle wasn't really in the picture yet (and certainly not as popular yet) and Ant still had a lot of very zealous followers. 
+Recently, on of [my earlier blog posts](2010-01-01-maven-stop-ranting.md)  got published on Javalobby. The reactions I got were slightly different than the ones I got when I first wrote the article. For one, Gradle wasn't really in the picture yet (and certainly not as popular yet) and Ant still had a lot of very zealous followers. 
 
 It seems like some people didn't understand the underlying message of the post. It really wasn't about which one of the two choices was the best one, it was about the fact that people need to stop ranting about competing technologies. It's been a shift for me too, I'll admit that. I've been a very zealous believer in Spring and thus by nature I didn't like anything about Java EE and its containers. I was just as convinced as most Maven protesters were back in the day. 
 

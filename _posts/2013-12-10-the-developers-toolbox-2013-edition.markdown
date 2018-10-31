@@ -39,7 +39,7 @@ I'm not really that picky anymore on frameworks. If it does the job well, I'm us
 I could give a entire list of frameworks I have in my toolbox, but that would make this post explode. 
 The same goes for application servers. I don't care whether it's JBoss AS (or WildFly), Tomcat or Glassfish. But given the choice, I'll stay as far away as possible from WebSphere or WebLogic. They support all the standards, but for some reason something always works differently on those platforms.
 
-### JVM Language: [Groovy](http://groovy.codehaus.org/)
+### JVM Language: [Groovy](http://groovy-lang.org/)
 
 I've tried a lot of JVM languages this year: Scala, JRuby, Ceylon, Kotlin and the new Groovy version. As far as practicality and usability is concerned, Ceylon and Kotlin still aren't up to the level I need them to be in order to consider them a feasible choice for projects. JRuby was on my list as I use a lot of Ruby tools during development (Redmine for example), but there's someting about the Ruby language that puts me off. I'm sure it's a personal thing. Scala... well I tried, I really did. But I just can't get used to the syntax. Perhaps in a limited subset of projects I might consider Scala, but not for big projects. Java code can be difficult to read but Scala code can be impossible to read. Groovy seems to hit the sweet spot. It's close enough to Java to be familiar enough to start off quickly, but it adds so much useful features (closures, BigDecimal based math, GString, properties, ...). My favorite testing framework, Spock, is also written in Groovy
 
@@ -54,7 +54,7 @@ Also, with the front-end completely on the client side your designers have compl
 
 ### Architecture: CQRS 
 
-Having programmed countless applications the 'traditional' way in a layered architecture, I've come to believe this is not the right way to write applications anymore. Unless you're certain your application will not have a large user base you should be used a CQRS based architecture. Which means you should design your application in a way that write operations can be easily separated from read operations. CQRS involves a lot more than that, but already having that kind of separation will make your life a lot easier when you run into serious performance issues. If you have the means to have a architecture entirely based on CQRS principles, certainly go for it. Just [don't go overboard](http://www.insaneprogramming.be/blog/2013/12/01/on-eventually-consistent-data/).
+Having programmed countless applications the 'traditional' way in a layered architecture, I've come to believe this is not the right way to write applications anymore. Unless you're certain your application will not have a large user base you should be used a CQRS based architecture. Which means you should design your application in a way that write operations can be easily separated from read operations. CQRS involves a lot more than that, but already having that kind of separation will make your life a lot easier when you run into serious performance issues. If you have the means to have a architecture entirely based on CQRS principles, certainly go for it. Just [don't go overboard](2013-12-01-on-eventually-consistent-data.md).
 
 ### SQL Storage: [PostgreSQL](http://wwW.postgresql.org)/[MariaDB](http://www.mariadb.org)
 
@@ -69,6 +69,6 @@ But I also have to say I've been looking into other NoSQL datastores lately, so 
 
 Writing documentation is something no developer loves. Since I've been using AsciiDoctor to write documentation, I don't really dread writing documentation that much anymore. The fact alone that I don't need to start up a word processor to write my documentation (if there is something I loathe more than documentation, it's Word) is a definite win for me. The documentation can be generated in both HTML(5) and PDF format so that you could provide and offline and online version of your documentation.
 
-Tools that are also worth mentioning are [Liquibase](http://www.liquibase.org), [ContiPerf](http://databene.org/contiperf), [Mockito](http://code.google.com/p/mockito/) and [Lombok](http://projectlombok.org/).
+Tools that are also worth mentioning are [Liquibase](http://www.liquibase.org), [Mockito](http://code.google.com/p/mockito/) and [Lombok](http://projectlombok.org/).
 
 If you have other tools that you have in your toolbox and which you couldn't live without, please share in the comments.
