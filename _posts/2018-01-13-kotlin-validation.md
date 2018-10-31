@@ -12,7 +12,7 @@ Take validation for example. We current have the Bean Validation 2.0 specificati
 
 If you want to hide implementation details from a part of your application you'll probably create an abstraction, so that's what I started to build, in order to decouple my application API validation from any technical choice. And since I love using Kotlin, I thought a DSL might be a fun approach. Basically, I wanted my application API to define a validation specification which could then be converted into a real validation implementation in one of the infrastructure layers. I wanted to end up with something like this
 
-{% highlight kotlin %}
+``` kotlin
 val spec = validationSpec {
     constraints<Foo> {
         field(Foo::bar) {
@@ -21,7 +21,7 @@ val spec = validationSpec {
         }
     }
 }
-{% endhighlight %}
+```
 
 Here I'm basically creating a validation specification for the `Foo` class, defining that the `bar` field (a String) just be at least 5 characters long and not only contain whitespace characters.
 
@@ -32,7 +32,7 @@ I wanted a couple of other hard constraints (after yet again some very useful in
 
 If you know how Hibernate Validator works, you also know that you can already programmatically configure the validator. For example, you can do the example with the DSL like this:
 
-{% highlight kotlin %}
+``` kotlin
 val constraintMapping = DefaultConstraintMapping()
 constraintMapping.type(Foo::class.java)
         .property("bar", ElementType.FIELD)
@@ -41,13 +41,13 @@ constraintMapping.type(Foo::class.java)
 val config = Validation.byProvider(HibernateValidator::class.java).configure()
 config.addMapping(constraintMapping)
 val validator = config.buildValidatorFactory().validator
-{% endhighlight %}
+```
 
 After this, you can use the `validator` to validate your data structures. However, there are a couple of issues here. For starters, the `name` property is hardcoded and you can't check whether the validated class actually has a `name` field. Secondly, there's nothing that prohibits me from defining a `EmailDef()` constraints on an numeric field with this API. I think we can do a better job.
 
 First, I define the data structures that make up the validation specification:
 
-{% highlight kotlin %}
+``` kotlin
 data class ValidationSpec(val constraints: MutableList<Constraints<out Any>> = mutableListOf())
 
 data class Constraints<T : Any>(val klass: KClass<T>, val fieldConstraints: MutableList<FieldConstraint<T, out Any>> = mutableListOf())
@@ -56,18 +56,18 @@ data class FieldConstraint<T : Any, P: Any>(val property: KProperty1<T, P>,
                                             val constraintRules: MutableList<ConstraintRule<in P>> = mutableListOf()) {}
 
 interface ConstraintRule<T : Any>
-{% endhighlight %}
+```
 
 A `ValidationSpec` holds one or more `Constraints` for the different types, which in their turn define the various `ConstraintRule`'s for the `FieldConstraint`'s. A `ConstraintRule` is type-bound, in order to fulfill one of my constraints. So to implement the constraints needed in the DSL example, we need to provide a couple of implementations of `ConstraintRule`.
 
-{% highlight kotlin %}
+``` kotlin
 data class StringSize(val min: Int, val max: Int) : ConstraintRule<String>
 class StringNotBlank : ConstraintRule<String>
-{% endhighlight %}
+```
 
 Now Building a DSL for a `ValidationSpec` is fairly easy:
 
-{% highlight kotlin %}
+``` kotlin
 fun validationSpec(block: ValidationSpec.() -> Unit) : ValidationSpec {
     val validationSpec = ValidationSpec()
     block(validationSpec)
@@ -93,13 +93,13 @@ fun FieldConstraint<out Any, String>.notBlank() {
 fun FieldConstraint<out Any, String>.size(min: Int = 0, max: Int = Int.MAX_VALUE) {
     constraintRules.add(StringSize(min, max))
 }
-{% endhighlight %}
+```
 
 One of the fun parts of Kotlin is reified generics. This means that in some cases, you can get the type of a generic type parameter. For the `constraints`, this means we can do `T::class`, something that is impossible in Java. Otherwise we would have been forced to pass the type as a parameter, while now this can be inferred, making `constraints<Foo> {...}` possible, instead of resorting to `constraints(Foo::class) {...}` in the DSL.
 
 So now that we have a implementation agnostic DSL that we can use in our application API, we need a translation mechanism that we can use in our infrastructure layer to translate the specification to a real validation implementation.
 
-{% highlight kotlin %}
+``` kotlin
 class HibernateValidatorSpecFactory(val spec: ValidationSpec) {
     private val constraints: MutableMap<KClass<out ConstraintRule<out Any>>, ConstraintRuleTranslator<out ConstraintRule<out Any>>> = mutableMapOf()
 
@@ -150,11 +150,11 @@ class HibernateValidatorSpecFactory(val spec: ValidationSpec) {
         return factory.validator
     }
 }
-{% endhighlight %}
+```
 
 The translator could use some serious refactoring love, With this translator, we can now define a specification, make a `Validator` out of it and eventually validate an object.
 
-{% highlight kotlin %}
+``` kotlin
 // simple data class
 data class DslTest(val sField: String, val iField: Int)
 
@@ -174,20 +174,20 @@ fun main(args: Array<String>) {
         throw ConstraintViolationException(violations)
     }
 }
-{% endhighlight %}
+```
 
 This mechanism is also extensible. For example, I can define new rules and extend the DSL in my own code.
 
-{% highlight kotlin %}
+``` kotlin
 data class IntegerMinimumValue(val value: Int) : ConstraintRule<Int>
 fun FieldConstraint<out Any, Int>.min(value: Int) {
     constraintRules.add(IntegerMinimumValue(value))
 }
-{% endhighlight %}
+```
 
 Now say I want to validate using the following spec (`baz` is an Int field), which contains a `min` extensions to the rules.
 
-{% highlight kotlin %}
+``` kotlin
 val spec = validationSpec {
     constraints<Foo> {
         field(Foo::bar) {
@@ -199,16 +199,16 @@ val spec = validationSpec {
         }
     }
 }
-{% endhighlight %}
+```
 
 In order to use the extension, you'll have to register the new `ConstraintRule` in the translator.
 
-{% highlight kotlin %}
+``` kotlin
 val hibernateValidatorSpecFactory = HibernateValidatorSpecFactory(spec)
 hibernateValidatorSpecFactory.registerCustomConstraint(
         IntegerMinimumValue::class, HibernateValidatorSpecFactory.ConstraintRuleTranslator({ MinDef().value(it.value)})
 )
-{% endhighlight %}
+```
 
 Here I'm using a built-in `ConstraintDef` from Hibernate Validator, but you can build your own if you want which means creating a new validation annotation, a validator for that annotation and a new `ConstraintDef` implementation.
 

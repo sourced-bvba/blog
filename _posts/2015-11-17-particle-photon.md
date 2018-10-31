@@ -16,7 +16,7 @@ But how hard is it to code a Photon? The language is based on Wiring, so it look
 
 For example, blinking a LED on D0 (digital IO port 0) looks like this:
 
-{% highlight c %}
+``` c
 int led1 = D0;  
 void setup() {        
   pinMode(led1, OUTPUT);      
@@ -27,13 +27,13 @@ void loop() {
   digitalWrite(led1, LOW);        
   delay(1000);      
 }
-{% endhighlight %}
+```
 
 If you connect a LED to D0 (using a small resistor), that’s it. You just blinked a LED using code you flashed from the internet.
 
 Now, the real strength lies in enabling the REST features the board has to offer. If we want to for example toggle a LED through the REST interface, you can do this with the following code:
 
-{% highlight c %}
+``` c
 int led1 = D0;
 void setup() {
   pinMode(led1, OUTPUT);
@@ -56,17 +56,17 @@ int ledToggle(String command) {
         return -1;
     }
 }
-{% endhighlight %}
+```
 
 Now with a simple REST call we can turn the led on and off.
 
-{% highlight bash %}
+``` bash
 # EXAMPLE REQUEST IN TERMINAL      
 # Core ID is 0123456789abcdef      
 # Your access token is 123412341234      
 curl -X POST https://api.particle.io/v1/devices/0123456789abcdef/led \        
 -d access_token=123412341234 \        
     -d params=on
-{% endhighlight %}
+```
 
 Using the Photon, you can make truly connected devices, controlled by a REST interface. The downside is that if the internet is down, so is the interaction with your device. You can however run the cloud server yourself, but the documentation on that is still under construction and requires some experimentation.

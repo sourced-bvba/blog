@@ -12,7 +12,7 @@ In an [earlier post](2014-08-18-rest-documentation-specification.md) I showed yo
 
 The raml-tester library has a utility class that checks whether a REST call and the result from that call adhere to a given specification: CheckingWebTarget. You need a JAX-RS client API implementation for this to work, which is a generic client API for REST services. In my example, I'm using Jersey, which is the reference implementation, but you're free to choose another implementation. This is the test:
 
-{% highlight java %}
+``` java
 public class RestApiTests {
 
     private static final RamlDefinition raml = RamlLoaders.fromClasspath(RestApiTests.class).load("helloworld.raml")
@@ -32,17 +32,17 @@ public class RestApiTests {
         Assert.assertThat(checking.getLastReport(), RamlMatchers.hasNoViolations());
     }
 }
-{% endhighlight %}
+```
 
 If for example you want to use RestEASY, you just replace the client declaration with this:
 
-{% highlight java %}
+``` java
 ResteasyClient client = new ResteasyClientBuilder().build();
-{% endhighlight %}
+```
 
 The bare bones specification for this service is
 
-{% highlight yaml %}
+``` yaml
 #%RAML 0.8
 ---
 title: Hello world REST API
@@ -55,7 +55,7 @@ version: v1
       200:
         body:
           application/json:
-{% endhighlight %}
+```
 
 This test will do a call to `http://localhost/hello` and check whether the call is valid according to the RAML specification. It will also check whether the result is valid, so for example the test will fail in this case if the result isn't a JSON document, or when the service returns something else than a HTTP status code 200. If you want a more extensive example, I suggest trying the article I mentioned at the beginning of this article and try to implement it this way, using either Spring MVC or JAX-RS. Or if you want to try something different and quick, try doing it with [Spark](http://sparkjava.com/).
 

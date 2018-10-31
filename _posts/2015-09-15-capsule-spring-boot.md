@@ -17,29 +17,29 @@ This means a Spring Boot jar or war file can be reduced from tens of megabytes t
 
 As Capsule essentially does the same thing as the Spring Boot repackaging process, you can replace the boot plugin in your Gradle build file with the [capsule plugin](https://github.com/danthegoodman/gradle-capsule-plugin). You need to add the following to your build file.
 
-{% highlight groovy %}
+``` groovy
 plugins {
     id "us.kirchmeier.capsule" version "1.0.0"
 }
-{% endhighlight %}
+```
 
 Then you can choose whether you want a fat jar or a slim jar that download dependencies on demand. The fat jar is by far the easiest and behaves the same as the standard boot plugin (I even noticed fat Capsule jars are a bit smaller for some reason). You need to add the following task to your build file.
 
-{% highlight groovy %}
+``` groovy
 task fatCapsule(type: FatCapsule) {
     applicationClass 'com.example.YourApplication'
 }
-{% endhighlight %}
+```
 
 Then a simple `gradle clean build fatCapsule` does the trick.
 
 To build a jar that downloads its dependencies on demand, you need to have a different task:
 
-{% highlight groovy %}
+``` groovy
 task mavenCapsule(type: MavenCapsule){
     applicationClass 'sample.RsApplication'
 }
-{% endhighlight %}
+```
 
 The command to build this jar in this case is `gradle clean build mavenCapsule`.
 

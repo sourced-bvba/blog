@@ -14,7 +14,7 @@ The reason why I find RAML so compelling as a Java dev is the fact that the spec
 
 For example, I need a service with this RAML specification:
 
-{% highlight yaml %}
+``` yaml
 #%RAML 0.8
 ---
 title: simple
@@ -39,11 +39,11 @@ version: v1
                   }
                 }
               }
-{% endhighlight %}
+```
 
 Using TDD principles I write a Spock test using the raml-tester library.
 
-{% highlight groovy %}
+``` groovy
 @ContextConfiguration(loader = SpringApplicationContextLoader, classes = BootApplication)
 @WebAppConfiguration
 class HelloRestServiceSpecification extends Specification {
@@ -70,11 +70,11 @@ class HelloRestServiceSpecification extends Specification {
                 .andExpect(api.matches().aggregating(aggregator))
     }
 }
-{% endhighlight %}
+```
 
 Naturally, this test will fail (it'll say a 404 isn't in the spec). Now I can write a REST controller that adheres to the specification.
 
-{% highlight groovy %}
+``` groovy
 @RestController
 public class HelloController {
 
@@ -90,7 +90,7 @@ public class HelloController {
         Integer integerValue
     }
 }
-{% endhighlight %}
+```
 
 If I make a mistake, for example making the integerValue field a String, the test will fail. From a TDD point of view, this is excellent. 
 

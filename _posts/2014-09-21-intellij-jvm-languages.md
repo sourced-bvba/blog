@@ -16,7 +16,7 @@ Spring Boot's health endpoints works by querying various indicators. Like most t
 
 A simple implementation with Hystrix, which I'll show in a minute, could be that when there is a tripped circuitbreaker in the system, the health of the application might be 'out of service'. This is actually very easy to do. You just need to add a bean in your configurations returning an implementation of `AbstractHealthIndicator`:
 
-{% highlight groovy %}
+``` groovy
 class HystrixMetricsHealthIndicator extends AbstractHealthIndicator {
     @Override
     protected void doHealthCheck(Health.Builder builder) throws Exception {
@@ -31,7 +31,7 @@ class HystrixMetricsHealthIndicator extends AbstractHealthIndicator {
         breakers ? builder.outOfService().withDetail("openCircuitBreakers", breakers) : builder.up()
     }
 }
-{% endhighlight %}
+```
 
 Whenever a circuitbreaker gets tripped, the health endpoint will return the state of the application as `OUT_OF_SERVICE` and will also return the name of the open circuit breakers (the command key and the group it's in).
 
@@ -47,13 +47,13 @@ As you can see, with such mechanisms it becomes possible to create a self-regula
 
 Normally, if you want to alter the order in which statuses are aggregated, you can use a property in your `application.properties` like `health.status.order = DOWN,OUT_OF_SERVICE,UNSTABLE,STRUGGLING,UP,UNKNOWN` as documented. However, if you're using the YAML-style properties, you're out of luck, as there's [an annoying bug](https://jira.spring.io/browse/SPR-11759) that's restricting you from using this feature. So if you're using YAML properties, you'll have to configure the `HealthAggregator` yourself. Luckily, this isn't that hard, just add this bean to your application context:
 
-{% highlight groovy %}
+``` groovy
 @Bean
 HealthAggregator healthAggregator() {
     def healthAggregator = new OrderedHealthAggregator();
     healthAggregator.setStatusOrder(["DOWN", "OUT_OF_SERVICE", "UNSTABLE", "UP", "UNKNOWN"]);
     return healthAggregator;
 }
-{% endhighlight %}
+```
 
 Why they didn't use the `@EnableConfigurationProperties` in the `HealthIndicatorAutoConfiguration` is a mystery to me, as this would have solved the issue. Perhaps I'll do it myself and make a pull request.

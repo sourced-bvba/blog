@@ -20,7 +20,7 @@ Their JSON object reference requires an object to have a unique ID. Luckily, thi
 
 So how do you serialize an object graph? Well, assume you have two entities with bidirectional relationships like this:
 
-{% highlight java %}
+``` java
 @Entity
 public class ParentEntity {
     @Id
@@ -42,11 +42,11 @@ public class ChildEntity {
 
     // getters and setters omitted for brevity
 }
-{% endhighlight %}
+```
 
 Adding Jackson JSON identities is very simple:
 
-{% highlight java %}
+``` java
 @Entity
 @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
 public class ParentEntity {
@@ -58,11 +58,11 @@ public class ParentEntity {
 public class ChildEntity {
     ...
 }
-{% endhighlight %}
+```
 
 And that's it! If you would now serialize a parent object with 2 children, you'll get something like this:
 
-{% highlight json %}
+``` json
 {
     "id": "parent-id1",
     "description": "parent",
@@ -79,5 +79,5 @@ And that's it! If you would now serialize a parent object with 2 children, you'l
         }
     ]
 }
-{% endhighlight %}
+```
 

@@ -29,9 +29,9 @@ In my article, I used `Optional` as a parameter. While this might seem like a go
 turns ugly when you have multiple parameters like that in your interface. Suddenly, you have an unreadable method
 invocation like this.
 
-{% highlight java %}
+``` java
 service.createProduct(name, Optional.empty(), Optional.empty(), price);
-{% endhighlight %}
+```
 
 Most of the time, if you're using `Optional`, you should either us overloaded methods or use a parameter objects.
 Both options allow you to specify which combination is valid, either through its signature or through validation
@@ -41,16 +41,16 @@ Using a parameter object also is the solution to the problem of the last article
 complex objects to handle query parameters: Spring MVC will handle any property in a non-annotated parameter as a query
 parameter, Jersey needs a `@BeanParam` annotation. With Spring MVC for example the REST endpoint would now become this.
 
-{% highlight java %}
+``` java
 @GetMapping
 public List<BuildingJson> find(ListBuildingsRequestParams params)  {
 	return listBuildings.execute(params.toRequest(), new JsonBuildingResponseModelPresenter());
 }
-{% endhighlight %}
+```
 
 The params object itself looks like this.
 
-{% highlight java %}
+``` java
 public class ListBuildingsRequestParams {
 	private String nameStartsWith;
 
@@ -68,7 +68,7 @@ public class ListBuildingsRequestParams {
 		return builder.build();
 	}
 }
-{% endhighlight %}
+```
 
 As you can see, `Optional` is only used as a return value to wrap a nullable reference. This way in the `toRequest` method
 you can use `ifPresent` to correctly build the request. You do need the ugly getter/setter combination, but that's Spring

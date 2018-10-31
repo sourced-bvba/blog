@@ -14,16 +14,16 @@ It looks innocent, and from a technical standpoint you can't deny this is a cool
 
 For those that haven't read some of my articles or know what ticks my boxes, I'm very much into designing and architecting maintainable software. Because of this, I'm a huge fan of clean architecture. That said, I'm also keenly aware of the fact that pure clean architecture is sometimes serious overkill, but I also firmly believe that you should aspire to stay as close as possible to its principles, making sure that deviations are because of a very good reason (not wanting to decouple because 2 datastructures look the same is NOT a good reason for example). To put it very simply, a basic REST application with clean architecture would go something like this:
 
-{% highlight text %}
+``` text
 User -> REST controller -> Use case (interface) -> Use case (implementation) -> Gateway (interface) -> Repository (implementation) -> DB
-{% endhighlight %}
+```
 
 Within this flow, you try to decouple as much as practical. The user gets view models returned (JSON structures), the boundary return response models (data structures specific to the use case), the gateway returns domain models (containing business logic) and the repository uses a persistent model. 
 The REST controller lives in the outward facing infrastructure layer, the use case in the application layer, the gateway in the domain layer and the repository in the inward facing infrastucture layer. From a layer dependency standpoint:
 
-{% highlight text %}
+``` text
 infra-web -> app-api <- app-impl -> domain <- infra-persistence
-{% endhighlight %}
+```
 
 Looks familiar? It should. It's called dependency inversion, the last of the SOLID principles. You can make some concessions here, for example merging the domain model into the persistent model by adding JPA annotations on the domain model. Or you can choose to merge the response models returned by the use case and the view model, directly serializing use case responses. However, each compromise comes at a price and one needs to be aware of this. Basically, you're breaking the Single Responsibility Principle then. If you ever want to change persistence, you'll be forced to change your domain layer... But as a basic rule, you need at least 2 datastructures in order to decouple both infrastructure layer, and 4 at th most. But 2 is the absolute minimum (and comes at a cost in the form of less flexibility and higher coupling).
 

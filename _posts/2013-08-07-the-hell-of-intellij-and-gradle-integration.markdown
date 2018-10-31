@@ -25,7 +25,7 @@ I just wished the guys from Gradle would have done this in the first place, but 
 
 First you have a class in your `buildSrc\src\main\groovy` folder that has all the functionality for the enrichment process (as I call it).
 
-{% highlight groovy %}
+``` groovy
 import org.gradle.api.Project;
 
 public class IdeaEnricher {
@@ -97,11 +97,11 @@ public class IdeaEnricher {
         }
     }
 }
-{% endhighlight %}  
+```  
 
 Enabling it in your gradle build script is quite trivial then:
 
-{% highlight groovy %}
+``` groovy
 idea {
     module {
         iml {
@@ -119,7 +119,7 @@ idea {
         }
     }
 }
-{% endhighlight %}
+```
 
 I'm inclined to do a bit more tinkering on the ipr file so that the output folder is in line with gradle's build folder. Now IntelliJ creates its own `out` folder. It's a minor annoyance, but since I'm changing the configuration anyway, I might as well go all the way.
 

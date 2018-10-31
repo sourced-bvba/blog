@@ -20,13 +20,13 @@ At the moment, I haven't found anything that Spring MVC can do for REST which JA
 
 First you need to add a dependency to your application.
 
-{% highlight groovy %}
+``` groovy
 compile "org.springframework.boot:spring-boot-starter-jersey"
-{% endhighlight %}
+```
 
 The only thing you need to do then is to add a Jersey `ResourceConfig` class to your Spring context.
 
-{% highlight java %}
+``` java
 @Component
 public class JerseyConfig extends ResourceConfig {
     public JerseyConfig() {
@@ -37,11 +37,11 @@ public class JerseyConfig extends ResourceConfig {
         // register(...);
     }
 }
-{% endhighlight %}
+```
 
 Now you can start writing JAX-RS endpoint classes. Each endpoint class must be a Spring bean in order to be able to use Spring DI inside the JAX-RS endpoints. For example, this is a very simple endpoint:
 
-{% highlight java %}
+``` java
 @Component
 @Path("/hello")
 public class HelloWorldEndpoint {
@@ -51,7 +51,7 @@ public class HelloWorldEndpoint {
         return "Hello world!";
     }
 }
-{% endhighlight %}
+```
 
 When you register this endpoint in your `ResourceConfig` class (`register(HelloWorldEndpoint.class);`) the endpoint will be available, in this case on `/hello/world`.
 
@@ -67,13 +67,13 @@ Swagger is quickly turning into the documentation framework of choice for REST A
 
 First you need to add the dependency.
 
-{% highlight groovy %}
+``` groovy
 compile 'io.swagger:swagger-jersey2-jaxrs:1.5.3'
-{% endhighlight %}
+```
 
 Second, you need to configure the `BeanConfig` for Swagger. You can do this in your `ResourceConfig` class.
 
-{% highlight java %}
+``` java
 BeanConfig beanConfig = new BeanConfig();
 beanConfig.setVersion("1.0.2");
 beanConfig.setSchemes(new String[]{"http"});
@@ -82,20 +82,20 @@ beanConfig.setBasePath("/");
 beanConfig.setResourcePackage("your.resource.package.here,your.other.package.here");
 beanConfig.setPrettyPrint(true);
 beanConfig.setScan(true);
-{% endhighlight %}
+```
 
 This `BeanConfig` can be configured with the needed information, most of which you can get out of Spring Boot's configuration, such as supported schemes, the port, the host, ...
 Third, you need to register the Swagger resource.
 
-{% highlight java %}
+``` java
 register(ApiListingResource.class);
-{% endhighlight %}
+```
 
 Now don't forget to annotate your resources with `@Api` so that Swagger will pick them up.
 
 A complete `ResourceConfig` with WADL and Swagger support would look something like this:
 
-{% highlight java %}
+``` java
 public class JerseyConfig extends ResourceConfig {
 
     public JerseyConfig() {
@@ -120,7 +120,7 @@ public class JerseyConfig extends ResourceConfig {
         register(HelloWorldEndpoint.class);
     }
 }
-{% endhighlight %}
+```
 
 ## Conclusion
 

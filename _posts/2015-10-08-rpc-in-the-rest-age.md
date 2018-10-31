@@ -15,13 +15,13 @@ Most Spring users are familiar with the remoting features it provides, including
 
 JSON-RPC is an official standard, now in its 2.0 version. It uses JSON payloads to define both the request and the response of the RPC call. A standard JSON-RPC call looks like this:
 
-{% highlight json %}
+``` json
 {
   "id":1234,
   "method":"myRpcMethod",
   "params":["test"]
 }
-{% endhighlight %}
+```
 
 With JSON-RPC you can choose to have a dedicated endpoint per service or a single endpoint, differentiating between the services on the server level by prefixing your method name with a service identifier.
 
@@ -35,7 +35,7 @@ With jsonrpc4j exposing a service as a JSON service is dead easy. I'm going to g
 
 For example, say we have a service that needs to be exposed that looks like this:
 
-{% highlight java %}
+``` java
 public interface MyService {
   String sayHelloWorld(String name);
 }
@@ -45,11 +45,11 @@ public class MyServiceImpl implements MyService {
     return "Hello world, " + name;
   }
 }
-{% endhighlight %}
+```
 
 To expose this service to JSON-RPC with Spring Boot, this is the config you need with jsonrpc4j:
 
-{% highlight java %}
+``` java
 @SpringBootApplication
 public class RpcApplication {
   public static void main(String[] args) {
@@ -69,18 +69,18 @@ public class RpcApplication {
     return exporter;
   }
 }
-{% endhighlight %}
+```
 
 And that's it. Start up your Boot application and execute the following `curl` command:
 
-{% highlight bash %}
+``` bash
 curl -v -X POST -d '{"id":0, "method":"sayHelloWorld", "params":["John Doe"]}' http://localhost:8080/rpc/myservice
-{% endhighlight %}
+```
 
 You should then receive the following response:
 
-{% highlight json %}
+``` json
 {"response": "Hello world, John Doe"}
-{% endhighlight %}
+```
 
 And that's it for exposing JSON-RPC methods with Spring Boot. Very simple, very quick and very powerful. Personally I like JSON-RPC APIs a lot for internal usage because it has such a small learning curve. While it's definitely not REST, it does allow you to quickly expose a service over an HTTP interface with JSON datastructures. JSON-RPC APIs can be an excellent addition to your REST APIs. There's no doubt that REST APIs are preferred for external web services, but for internal communication or internal APIs, JSON-RPC can provide a quick alternative to externalize services without having to worry about mapping everything to RESTful resources.

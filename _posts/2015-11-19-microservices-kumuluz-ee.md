@@ -12,27 +12,27 @@ Recently some new tools have popped up to support Java EE microservices with emb
 
 We’re going to start off adding the necessary dependencies to our build file (Gradle).
 
-{% highlight groovy %}
+``` groovy
 compile 'com.kumuluz.ee:kumuluzee-core:1.0.0'      
 compile 'com.kumuluz.ee:kumuluzee-servlet-jetty:1.0.0'      
 compile 'com.kumuluz.ee:kumuluzee-cdi:1.0.0'      
 compile 'com.kumuluz.ee:kumuluzee-jax-rs:1.0.0'      
 compile 'com.kumuluz.ee:kumuluzee-bean-validation:1.0.0'
-{% endhighlight %}
+```
 
 This adds the necessary dependencies to build a basic REST based microservice.
 
 Next, we’re adding the basic Application class needed for JAX-RS deployments.
 
-{% highlight java %}
+``` java
 @ApplicationPath("/rest/")      
 public class TestApplication extends Application {      
 }
-{% endhighlight %}
+```
 
 This will set the root path for all the REST endpoints you’ll add. Next, we’re going to add a basic REST endpoint.
 
-{% highlight java %}
+``` java
 @Path("/test")      
 public class TestResource {                 
   @GET          
@@ -40,7 +40,7 @@ public class TestResource {
     return 42;          
   }      
 }
-{% endhighlight %}
+```
 
 To run the application, you can start it in your IDE using the EeApplication class from KumuluzEE. This class has a main method and will start up the embedded Jetty container and deploy all the EE classes. Nothing more is needed. Alternatively, you can create an uberjar or use Capsule to create a self-running JAR, using the EeApplication as the main class.
 

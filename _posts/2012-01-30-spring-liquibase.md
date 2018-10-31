@@ -15,7 +15,7 @@ So without further ado (and with imports), the new and improved SpringLiquibaseU
 
 
 
-{% highlight java %}
+``` java
 import liquibase.Liquibase;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
@@ -269,6 +269,6 @@ public class SpringLiquibaseUpdater {
         return getClass().getName()+"("+this.getResourceLoader().toString()+")";
     }
 }
-{% endhighlight %}
+```
 
 Have fun!

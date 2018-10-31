@@ -27,7 +27,7 @@ That's not cool.
 
 When I first saw this, I wrote this piece of code, which would have actually been the elegant solution.
 
-{% highlight java %}
+``` java
 @GetMapping
 public List<BuildingJson> find(@RequestParam(value = "nameStartsWith") String name)  {
 	return listBuildings.execute(new ListBuildingsRequest(name), new JsonBuildingResponseModelPresenter());
@@ -37,7 +37,7 @@ public List<BuildingJson> find(@RequestParam(value = "nameStartsWith") String na
 public List<BuildingJson> find()  {
 	return listBuildings.execute(new ListBuildingsRequest(), new JsonBuildingResponseModelPresenter());
 }
-{% endhighlight %}
+```
 
 And as you might have guessed, my integration tests all failed, the entire controller was marked invalid
 because of this construct. You cannot overload methods in Spring MVC if they share the same endpoint, even
@@ -47,7 +47,7 @@ Same thing with Jersey, the resource fails to register because of an overloaded 
 
 So I had to write this.
 
-{% highlight java %}
+``` java
 @GetMapping
 public List<BuildingJson> find(@RequestParam(value = "nameStartsWith", required = false) String name)  {
 	// YUCK.. I really don't want to pass nullable fields but this stinks...
@@ -57,12 +57,12 @@ public List<BuildingJson> find(@RequestParam(value = "nameStartsWith", required 
 		return listBuildings.execute(new ListBuildingsRequest(name), new JsonBuildingResponseModelPresenter());
 	}
 }
-{% endhighlight %}
+```
 
 I really, really dislike this. This just reads awful. Bear in mind, if I had multiple filters, I would employ a builder
 pattern for the request (because of the combinations), but the `if` statements would remain. You'd get something like this.
 
-{% highlight java %}
+``` java
 @GetMapping
 public List<BuildingJson> find(@RequestParam(value = "nameStartsWith", required = false) String name)  {
   ListBuildingRequestBuilder requestBuilder = new ListBuildingRequestBuilder();
@@ -73,19 +73,19 @@ public List<BuildingJson> find(@RequestParam(value = "nameStartsWith", required 
   // if ...
   return listBuildings.execute(requestBuilder.build(), new JsonBuildingResponseModelPresenter());
 }
-{% endhighlight %}
+```
 
 You get the point.
 
 But what other options do I have? Well, I could use `java.util.Optional` in the parameter in my request. This would
 reduce this to this.
 
-{% highlight java %}
+``` java
 @GetMapping
 public List<BuildingJson> find(@RequestParam(value = "nameStartsWith", required = false) String name)  {
 	return listBuildings.execute(new ListBuildingsRequest(Optional.ofNullable(name)), new JsonBuildingResponseModelPresenter());
 }
-{% endhighlight %}
+```
 
 This actually reads a lot better, but unfortunately IntelliJ disagrees. See, if you try to use an Optional field as a method
 parameter, it'll mark this as a warning. Turns out, this is for a reason. Brian Goetz, the guy that was actually part of the
@@ -94,12 +94,12 @@ overloaded methods. He probably doesn't write a lot of REST APIs.
 
 Spring MVC has quite good support for Optional, because you can simplify the above code like this.
 
-{% highlight java %}
+``` java
 @GetMapping
 public List<BuildingJson> find(@RequestParam(value = "nameStartsWith") Optional<String> name)  {
 	return listBuildings.execute(new ListBuildingsRequest(name), new JsonBuildingResponseModelPresenter());
 }
-{% endhighlight %}
+```
 
 That's clean code that actually communicates intent. But with a big, fat, ugly warning backed by the guys who invented the API in the first place. You can do the same thing in Jersey, but it's not supported out of the box, unfortunately, so need to add some magic classes to support `Optional`.
 

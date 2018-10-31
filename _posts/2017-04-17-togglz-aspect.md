@@ -10,11 +10,11 @@ Despite what you might think when reading my last articles, this boy still write
 
 Togglz is actually a very nice framework with a lot of integrations, one of which is Spring Boot, which makes me very happy off course. Unfortunately, adding Togglz to your code is quite intrusive, as the examples give you instructions like this:
 
-{% highlight java %}
+``` java
 if( MyFeatures.FEATURE_ONE.isActive() ) {
   // new stuff here
 }
-{% endhighlight %}
+```
 
 I don't know about you, but adding `if` statements all over my code doesn't make me a happy camper. This would also imply that I have to break a core principle when using Clean Architecture: keeping frameworks out of the application layer. Adding an `if` structure to my application layer implies having a direct dependency on Togglz, which is something I really want to avoid.
 
@@ -22,34 +22,34 @@ However, this looks like a prime example when you should use aspects. I also wan
 
 So we'll start off with a simple enum that lists the features we can toggle.
 
-{% highlight java %}
+``` java
 public enum MyFeature {
     MAKE_COFFEE,
     MAKE_TEA
 }
-{% endhighlight %}
+```
 
 Then we'll create a simple annotation that indicates which use cases in my application layer can be toggled.
 
-{% highlight java %}
+``` java
 @Retention(RetentionPolicy.RUNTIME)
 public @interface FeatureToggle {
 	MyFeature value();
 }
-{% endhighlight %}
+```
 
 No dependencies to external frameworks, so we're good. Now I can use this in one of my use cases in my application layer.
 
-{% highlight java %}
+``` java
 @FeatureToggle(MAKE_TEA)
 public class MakeTeaImpl implements MakeTea {
     ...
 }
-{% endhighlight %}
+```
 
 So far, this code does nothing. The real magic is when you add an aspect that does all the heavy lifting. This code resides in your infrastructure layer, so dependencies here are not a problem (they are in fact the only layers that should have dependencies that bind you to a certain solution to a problem).
 
-{% highlight java %}
+``` java
 @Aspect
 public class FeatureToggleAspect {
 	@Around("@within(featureToggle)")
@@ -61,13 +61,13 @@ public class FeatureToggleAspect {
 		}
 	}
 }
-{% endhighlight %}
+```
 
 `FeatureNotEnabledException` is just a simple runtime exception, in case you were wondering.
 
 Because I didn't use any Togglz dependencies in my application layer, I need to create a wrapper that will wrap my enum values into a `Feature` instance. This is what you see here being used as `EnumFeatureWrapper`.
 
-{% highlight java %}
+``` java
 public class EnumFeatureWrapper implements Feature {
 	private Enum<?> enumValue;
 
@@ -80,7 +80,7 @@ public class EnumFeatureWrapper implements Feature {
 		return enumValue.name();
 	}
 }
-{% endhighlight %}
+```
 
 If you now start your application with the `togglz-spring-boot-starter` dependency, in your Spring Boot application, you can now enjoy clean Togglz integration, but you'll notice a problem.
 
@@ -88,7 +88,7 @@ Because of the same reason that I needed to write the `EnumFeatureWrapper`, you'
 
 We'll start off with writing our `FeatureProvider`.
 
-{% highlight java %}
+``` java
 @Named
 public class MyFeatureProvider implements FeatureProvider {
 
@@ -110,11 +110,11 @@ public class MyFeatureProvider implements FeatureProvider {
 		return new EnvironmentFeatureMetaData(feature, environment);
 	}
 }
-{% endhighlight %}
+```
 
 In addition, we need an `EnvironmentFeatureMetaData` class that does some configuration mojo that's a bit more in line what we would expect and that is compatible with YAML configuration.
 
-{% highlight java %}
+``` java
 public class EnvironmentFeatureMetaData implements FeatureMetaData {
 	private Feature feature;
 	private Environment environment;
@@ -150,13 +150,13 @@ public class EnvironmentFeatureMetaData implements FeatureMetaData {
 		return new HashMap<>();
 	}
 }
-{% endhighlight %}
+```
 
 Now we're in business. If your classpath scanning is set up correctly, startup should go smooth, but you'll notice that all your annotated use cases throw a `FeatureNotEnabledException` when invoked. That's because every feature is disabled by default (by the `EnvironmentFeatureMetaData`) unless configured as enabled.
 
 So you'll have to add some configuration to your `application.yaml`.
 
-{% highlight yaml %}
+``` yaml
 togglz:
   features:
     MAKE_COFFEE:
@@ -167,7 +167,7 @@ togglz:
       enabled: true
       label: Making a cup of tea
       group: Brewing
-{% endhighlight %}
+```
 
 If you now start up your application, every `@FeatureToggle`-annotated class will work as expected. 
 

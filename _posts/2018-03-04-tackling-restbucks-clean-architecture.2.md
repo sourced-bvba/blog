@@ -14,7 +14,7 @@ In this example, we'll use events to signal the wanted domain behavior, so we'll
 
 The domain in this example is quite simple. You have an order with items and there are a couple of actions that can be performed on the domain object that can change the state of the domain object or invoke some sort of a behavior.
 
-{% highlight kotlin %}
+``` kotlin
 class Order(val id: String, val customer: String, status: Status, val items: List<OrderItem>) {
     lateinit var cost : BigDecimal
     var status : Status = status
@@ -52,20 +52,20 @@ class Order(val id: String, val customer: String, status: Status, val items: Lis
 }
 
 data class OrderItem(val product: String, val quantity: Int, val size: Size, val milk: Milk)
-{% endhighlight %}
+```
 
 As you can see, this domain object's behavioral methods don't only change their state and check the logic, but also send events at appropriate. So from an event perspective, there are 4 events that can happens in the system.
 
-{% highlight kotlin %}
+``` kotlin
 data class OrderCreated(val order: Order) : DomainEvent 
 data class OrderDeleted(val id: String) : DomainEvent
 data class OrderDelivered(val id: String) : DomainEvent
 data class OrderPaid(val id: String) : DomainEvent
-{% endhighlight %} 
+``` 
 
 With regards to using some sort of event infrastructure framework, there are a couple of options. Axon for example is a quite good framework for building an event-driven application. I however use a very simple implementation that does most of the heavy lifting.
 
-{% highlight kotlin %}
+``` kotlin
 interface DomainEvent {
     fun sendEvent() {
         EventPublisher.Locator.eventPublisher.publishEvent(this)
@@ -83,11 +83,11 @@ interface EventPublisher {
         lateinit var eventPublisher: EventPublisher
     }
 }
-{% endhighlight %}
+```
 
 This way my event publishing can also be nicely decoupled from any of the technical frameworks and once again deferred to an infrastructure layer. To give an example, if you wanted to use the Spring event mechanism, you can use the following classes to implement that support.
 
-{% highlight kotlin %}
+``` kotlin
 @Component
 class SpringApplicationEventPublisher(private val applicationEventPublisher: ApplicationEventPublisher) : EventPublisher {
     override fun publishEvent(event: Any) {
@@ -128,11 +128,11 @@ class SpringDomainEventConsumerRegistrar(val applicationEventMulticaster: Applic
         }
     }
 }
-{% endhighlight %}
+```
 
 However, you can just create a very naive implementation to make sure everything still starts.
 
-{% highlight kotlin %}
+``` kotlin
 @Configuration
 @ComponentScan
 class DomainConfiguration {
@@ -147,20 +147,20 @@ class MockEventPublisher : EventPublisher {
     override fun publishEvent(event: DomainEvent) {
     }
 }
-{% endhighlight %}
+```
 
 The last part of the domain layer is a way to retrieve domain entities in our application layer, the gateway. In this example, the gateway doesn't need to retrieve much in order to achieve the use case goals (just enough will do).
 
-{% highlight kotlin %}
+``` kotlin
 interface OrderGateway {
     fun getOrders() : List<Order>
     fun getOrder(orderId: String) : Order
 }
-{% endhighlight %}
+```
 
 Now that we have our domain implemented, we can use this to implement the use cases we defined earlier. As most of the behavior is contained inside the domain layer, this implementation is very straightforward. The most elaborate ones are CreateOrder and GetOrders, as they require some mapping between the domain model and the response model.
 
-{% highlight kotlin %}
+``` kotlin
 @UseCase
 class CreateOrderImpl : CreateOrder {
     override fun <T> create(request: CreateOrderRequest, presenter: (CreateOrderResponse) -> T): T {
@@ -198,11 +198,11 @@ class GetOrdersImpl(val orderGateway: OrderGateway) : GetOrders {
         return GetOrdersResponseItem(product, quantity, size, milk)
     }
 }
-{% endhighlight %}
+```
 
 As you can see, I'm also using Kotlin's extension method mechanism here. It makes the code a bit nicer to read, in my opinion, but feel free to choose you own style that suits you best. The other use cases merely get the required domain instance and call a method on it, for example.
 
-{% highlight kotlin %}
+``` kotlin
 @UseCase
 class DeliverOrderImpl(val orderGateway: OrderGateway) : DeliverOrder {
     override fun deliver(request: DeliverOrderRequest) {
@@ -218,11 +218,11 @@ class PayOrderImpl(val orderGateway: OrderGateway) : PayOrder {
         order.pay()
     }
 }
-{% endhighlight %}
+```
 
 The only thing that's missing to get the application to run once again is a mock implementation of the `OrderGateway`. 
 
-{% highlight kotlin %}
+``` kotlin
 @Component
 class MockOrderGateway : OrderGateway {
     override fun getOrder(orderId: String): Order {
@@ -236,7 +236,7 @@ class MockOrderGateway : OrderGateway {
         )
     }
 }
-{% endhighlight %}
+```
 
 So now we have implemented the web layer, the entire application layer and the domain layer. All that's left is implementing the persistence layer, which I'll cover in the next episode.
 

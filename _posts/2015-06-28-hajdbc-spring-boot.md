@@ -10,7 +10,7 @@ Sometimes you want a bit more resilience in your application and not depend on a
 
 I thought it would be nice to see whether I could add Spring Boot support which transparently enables HA-JDBC support. And thanks to the simplicity of Spring Boot, it wasn't that hard.<!--more--> This is the code to enable HA-JDBC support.
 
-{% highlight groovy %}
+``` groovy
 import net.sf.hajdbc.SimpleDatabaseClusterConfigurationFactory
 import net.sf.hajdbc.SynchronizationStrategy
 import net.sf.hajdbc.balancer.BalancerFactory
@@ -177,11 +177,11 @@ class HaJdbcConfiguration {
 
     }
 }
-{% endhighlight %}
+```
 
 When your Spring Boot application picks up this class, you can configure your Spring Boot application to use HA-JDBC by configuring its databases and the standard datasource Spring Boot provides when including JDBC support. For example, this configuration creates a datasource that replicates between two MySQL databases.
 
-{% highlight properties %}
+``` properties
 spring.datasource.url=jdbc:ha-jdbc:default
 spring.datasource.username=root
 spring.datasource.driver-class-name=net.sf.hajdbc.sql.Driver
@@ -192,7 +192,7 @@ hajdbc.driverDatabases[0].user=root
 hajdbc.driverDatabases[1].id=db2
 hajdbc.driverDatabases[1].location=jdbc:mysql://localhost/hatest2
 hajdbc.driverDatabases[1].user=root
-{% endhighlight %}
+```
 
 Be mindful that you always need to use the same username for all datasources. With this configuration, by default it will check every minute whether any disabled databases (due to connection failures) can be enabled again and will resync those databases.
 

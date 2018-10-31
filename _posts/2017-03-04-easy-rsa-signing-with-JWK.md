@@ -16,7 +16,7 @@ RSA is assymmetrical. This means you have a public and a private key (that can a
 
 So how does a JWK actually look like. Well, a RSA512 key with a key size of 2048 bits can look like this:
 
-{% highlight json %}
+``` json
 {
 	  "alg": "RS512",
 	  "d": "zg42TgpUyzGx6Gs9VUsbgiDk41CDg7SOFs_56nNt_ZimjZWO48YBewQXeTD8HGIcKUyo0IlKqWxNrOZBYXKWy_ac2F-SAHUHrxLvNIoclphCyDl43H6y0eLeSu4QjylM3sKwUjAIaMxBuFiQ2lswzxUc4037YuYx1XzCZcByhQAw4nZ-aywBRYe9O50UgZbIl-4jyc9QD0Iioh4xPZh31DwGGf6q_3vrLCHXe3-AW530ogpgJBvz7vRX_FdFNxDlC-tbtJn8eFmi_QZujj6pUIRqyVIufEObhsUDYZkS22wNeOiHV8Z651pgfqAPQBBY5YEz21VviDhmtx02mKZMzMT6aCaY52mWCQVo1Q9jnO7nZQDN5I8G3JLQdVE-DTUNHHD8GYnX2oI3ihuLonFgp21XYXF40ATBU8isHQTGwc1RcRxokxOt0rfc-PVGzb8i7a-rViXkxmDjh6-5Rb4JTclh54EMdyAcDQRZo0kg54wLnZVHSCFLuOmrLecGjwDMSux8nIQblL7oepjQ8qjqPrYaGax_LJ3ujhoEArAjAOiGNNtUXztgoudoUqKUm3HOuWtnIAyAyik0bY4dDlNDHaP0Zb-NxerzC9uXG3lr2hFrrHD3wJA7q8Zpxex14V9_DzZ0Th_d0zy5aph6zaaY9c63v3Gz41hAgGvB1Vt4nQE",
@@ -25,7 +25,7 @@ So how does a JWK actually look like. Well, a RSA512 key with a key size of 2048
 	  "kty": "RSA",
 	  "kid": "my-rsa-key"
 	}
-{% endhighlight %}
+```
 
 This is a private key, because of the presence of the `d` element (which is the private exponent of the RSA key). If you omit this element from the above JSON, you have the corresponding public key.
 
@@ -33,7 +33,7 @@ To use this in Java, you can use the Nimbus JWT library that is available. It su
 
 To read this key into Java you need to put all the keys in a JSON structure that has a collection of `keys`, so something like this:
 
-{% highlight json %}
+``` json
 {
   "keys": [
 	{
@@ -46,27 +46,27 @@ To read this key into Java you need to put all the keys in a JSON structure that
 	}
   ]
 }
-{% endhighlight %}
+```
 
 Once you have this, you just need a little bit of code to use this file:
 
-{% highlight java %}
+``` java
 File keySetFile = ...;
 JWKSet keySet = JWKSet.load(keySetFile);
-{% endhighlight %}
+```
 
 Now to get an RSA key out of the keyset, you can just do this:
 
-{% highlight java %}
+``` java
 RSAKey key = (RSAKey) keySet.getKeyByKeyId("my-rsa-key");
 KeyPair keyPair = new KeyPair(key.toPublicKey(), key.toPrivateKey());
-{% endhighlight %}
+```
 
 You can see I also make a `javax.security.KeyPair` from this `RSAKey`. This now allows me to use standard Java cryptographic APIs to sign and encrypt data.
 
 For example, if I wanted to sign some data, I can do this:
 
-{% highlight java %}
+``` java
 Signature signature = Signature.getInstance("SHA512withRSA");
 signature.initSign(keyPair.getPrivate(), new SecureRandom());
 String stringToBeSigned = "Hello there";
@@ -77,13 +77,13 @@ System.out.println("This is the signature: " + sig);
 signature.initVerify(keyPair.getPublic());
 signature.update(stringToBeSigned.getBytes());
 System.out.println("The signature is valid: " + signature.verify(Base64.getDecoder().decode(sig)));
-{% endhighlight %}
+```
 
 This example will print out a SHA512 signature (Base64 encoded for readability) and also indicate that the signature is also valid according to the public key.
 
 To encrypt some data, this is actually easy:
 
-{% highlight java %}
+``` java
 String stringToBeEncrypted = "Hello there";
 Cipher encrypter = Cipher.getInstance("RSA");
 encrypter.init(Cipher.ENCRYPT_MODE, keyPair.getPublic());
@@ -96,7 +96,7 @@ decrypter.init(Cipher.DECRYPT_MODE, keyPair.getPrivate());
 decrypter.update(Base64.getDecoder().decode(encrypted));
 String decrypted = new String(decrypter.doFinal());
 System.out.println(decrypted);
-{% endhighlight %}
+```
 
 This will encrypt a String using the RSA algorithm using the keysize you chose when generating the JWK and print it out (again Base64 encoded) and will then decrypt it using the private key and show you the decrypted string (which should be `Hello there`).
 

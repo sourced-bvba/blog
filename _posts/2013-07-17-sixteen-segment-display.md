@@ -19,7 +19,7 @@ The code is divided in 3 parts: the single character component, a character grou
 
 First I’ll show the single character component:
 
-{% highlight java %}
+``` java
 public class SixteenSegmentDisplay extends JComponent {
     private java.util.List<Integer> lightedSegments;
     public static final int WIDTH = 29;
@@ -187,11 +187,11 @@ public class SixteenSegmentDisplay extends JComponent {
         return pointList.toArray(new Point[pointList.size()]);
     }
 }
-{% endhighlight %}
+```
 
 To use this, you need an alfabet definition that defines which segments should light up for a given character:
 
-{% highlight java %}
+``` java
 public enum SixteenSegmentAlfabet {
     A(new char[]{'a', 'A'}, 1, 2, 3, 7, 8, 9, 10, 14),
     B(new char[]{'b', 'B'}, 1, 2, 5, 7, 9, 12, 14, 15, 16),
@@ -253,11 +253,11 @@ public enum SixteenSegmentAlfabet {
         return segments;
     }
 }
-{% endhighlight %}
+```
 
 To finish, the component capable of showing a String merely groups together a couple of the character components:
 
-{% highlight java %}
+``` java
 public class MultiCharacterDisplay extends JComponent {
     private static final int GAP = 5;
     private int segmentDisplayCount;
@@ -305,6 +305,6 @@ public class MultiCharacterDisplay extends JComponent {
         frame.setVisible(true);
     }
 }
-{% endhighlight %}
+```
 
 All in all, it was a nice exercise :) . If I find some more time, I’ll try and build some sort of marquee with it.

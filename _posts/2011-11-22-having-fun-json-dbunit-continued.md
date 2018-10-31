@@ -12,7 +12,7 @@ He reused my JSONDataSet idea and combined it with JUnit 4′s new Rule system t
 For most of my projects, I use Spring, JPA and Liquibase for database operations. The use of Liquibase makes the @Ddl annotation in Dan’s implementation practically useless, so in my implementation, I could drop this part of the code (I’m not really a fan of unit tests handling my schema creation). And since I’m using Spring and JPA, I can assume that there is a valid database connection in my Spring config under the form of a DataSource, so I can omit the entire constructor from the DbUnitRule and use injection instead. In his comments he mentions the idea of having the possibility of using the different file formats DbUnit uses so I added that as well (my JSON dataset implementation, flat XML and CSV). I then added some finishing touches (adding the ability to use Spring-style resources, enabling multiple datasets, reordering dataset so that foreign keys are resolved correctly and using TestRule instead of the deprecated MethodRule). The result is a very terse but powerful implementation.<!--more-->
 
 
-{% highlight java %}
+``` java
 /**
  * A JUnit rule which enables per-test data set loading using DbUnit. This rule is meant to be
  * used in a Spring context, reusing a DataSource in the context.
@@ -77,11 +77,11 @@ public class DbUnitRule implements TestRule {
         };
     }
 }
-{% endhighlight %}
+```
 
 Using this is extremely easy: first declare the DbUnitRule as a Spring bean or use classpath scanning (hence the @Component). Then simply inject the rule in your Spring enabled tests like this:
 
-{% highlight java %}
+``` java
 @ContextConfiguration("classpath:/be/insaneprogramming/examples/spring-config.xml")
 public class DbUnitRuleTests extends AbstractTransactionalJUnit4SpringContextTests {
     public @Rule @Autowired DbUnitRule dbUnitRule ;
@@ -94,6 +94,6 @@ public class DbUnitRuleTests extends AbstractTransactionalJUnit4SpringContextTes
     }
 
 }
-{% endhighlight %}
+```
 
 This now allows to use specialized data sets for particular test cases, which also causes data sets to become smaller and therefore more manageable. This was one of the drawbacks I encountered using the method as described in my previous article on JUnit and DBUnit.

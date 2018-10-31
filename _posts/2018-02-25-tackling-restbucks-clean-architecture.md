@@ -19,7 +19,7 @@ From a use case standpoint, we can identify 6 use cases:
 
 Starting from a [Spring Boot project template](https://github.com/cleanarchitecturebe/spring-boot-kotlin-template), we can start coding the application API. After we're finished, we're left with 6 interfaces and request/response models. For example, the CreateOrder use case would look like this:
 
-{% highlight kotlin %}
+``` kotlin
 interface CreateOrder {
     fun <T> create(request: CreateOrderRequest, presenter: (CreateOrderResponse) -> T) : T
 }
@@ -28,11 +28,11 @@ data class CreateOrderRequest(val customer: String, val items: List<CreateOrderR
 data class CreateOrderRequestItem(val product: String, val quantity: Int, val size: Size, val milk: Milk)
 
 data class CreateOrderResponse(val id: String, val customer: String, val amount: BigDecimal)
-{% endhighlight %}
+```
 
 And the GetOrders use case would look like this:
 
-{% highlight kotlin %}
+``` kotlin
 interface GetOrders {
     fun <T> getOrders(presenter: (List<GetOrdersResponse>) -> T) : T
 }
@@ -45,17 +45,17 @@ data class GetOrdersResponseItem(val product: String,
                                  val quantity: Int,
                                  val size: Size,
                                  val milk: Milk)
-{% endhighlight %}
+```
 
 If you look closely, there is something that should catch your eye: Milk, Size and Status. These are simple enums, for examle Milk:
 
-{% highlight kotlin %}
+``` kotlin
 enum class Milk {
     WHOLE,
     SKIMMED,
     SOY
 }
-{% endhighlight %}
+```
 
 We could opt to put these into the application API layer, but that would mean we'd have to copy these inside the domain layer (the application API layer and domain layer do not have a dependency, remember?). There might be valid reasons to do so, for example if the application layer has the possibility to change from the domain variant you should copy them, but in this case they are something that is called 'shared vocabulary'. This is the one module in clean architecture on which every other module depends on. This module should be cared for tremendously. In most cases, the only thing that goes into these are simple shared datastructures (like monetary values if you're not using `javax.money`), shared enums and perhaps a couple of exceptions. In this case, we'll put int the three enums `Milk`, `Size` and `Status`. 
 
@@ -75,7 +75,7 @@ There are a couple of variants that are possible here. You can opt to use a `PAT
 
 In the end, we end up with the Spring MVC controller looking something like this:
 
-{% highlight kotlin %}
+``` kotlin
 @RequestMapping("/order")
 @RestController
 class OrderResource(val createOrder: CreateOrder,
@@ -136,7 +136,7 @@ data class GetOrdersResponseBody(val id: String, val customer: String, val statu
 fun GetOrdersResponse.toResponseBody() : GetOrdersResponseBody {
     return GetOrdersResponseBody(id, customer, status.name.toLowerCase())
 }
-{% endhighlight %}
+```
 
 Again, you can see a couple of interesting pieces here. For example, the POST of `/order` actually directly uses the request object of the use case. If we wanted to be completely decouples, we should copy that data structure into a separate one, but in this case, it would be a one-to-one copy. Re-using the request object will save you some code and time here, but off course this comes at a cost. If you wanted to change the request of the use case, your REST endpoint will suddenly be impacted as well. It's a compromise, but as long as you're aware of the dangers, it's a valid compromise you can make in this case.
 
@@ -144,7 +144,7 @@ Here you also see the higher-order functions in action. They are able to map the
 
 If you want to run this, you'll have to provide some mock implementations of the use cases for now. For example, you can (for now) provide the following implementations in your application layer:
 
-{% highlight kotlin %}
+``` kotlin
 @UseCase
 class MockCreateOrder : CreateOrder {
     override fun <T> create(request: CreateOrderRequest, presenter: (CreateOrderResponse) -> T): T {
@@ -184,17 +184,17 @@ class MockPayOrder : PayOrder {
         return presenter(PayOrderResponse(Status.PAID))
     }
 }
-{% endhighlight %}
+```
 
 And add some component scanning magic in your main partition to make sure Spring can handle your custom annotions:
 
-{% highlight kotlin %}
+``` kotlin
 @Configuration
 @ComponentScan(basePackages = ["be.sourcedbvba.restbucks.usecase"],
         includeFilters = [ComponentScan.Filter(type = FilterType.ANNOTATION,
         value = [UseCase::class])])
 class UseCaseConfiguration
-{% endhighlight %}
+```
 
 Running this application will yield you the REST API you can already consume. Next up: implementing the application layer and the domain.
 

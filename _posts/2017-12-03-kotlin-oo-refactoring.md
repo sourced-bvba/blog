@@ -10,7 +10,7 @@ Refactoring is one of the mainstays of most developers in order to get their cod
 
 However, refactoring sometimes tends to result in small procedural private methods in a class. Take the following example:
 
-{% highlight kotlin %}
+``` kotlin
 @Named
 @Transactional
 class AddTableToFloorImpl(private val floorQueryRepository: FloorQueryRepository) : AddTableToFloor {
@@ -21,11 +21,11 @@ class AddTableToFloorImpl(private val floorQueryRepository: FloorQueryRepository
         return AddTableToFloor.Response(table.id)
     }
 }
-{% endhighlight %}
+```
 
 This code does a bit too much and should be refactored. A indicator of the need to refactor is when you have multiple dots on the same line in a method that has more than a single line of code. So we end up with something like this after refactoring.
 
-{% highlight kotlin %}
+``` kotlin
 @Named
 @Transactional
 class AddTableToFloorImpl(private val floorQueryRepository: FloorQueryRepository) : AddTableToFloor {
@@ -44,7 +44,7 @@ class AddTableToFloorImpl(private val floorQueryRepository: FloorQueryRepository
     private fun getFloor(request: AddTableToFloor.Request) =
             floorQueryRepository.getFloorById(request.floorId)
 }
-{% endhighlight %}
+```
 
 This code is already a lot more readable now, the intent of the implementation of the use case is easily understood. But we've introduced a very procedural way of refactoring. Granted, they're all private methods, but still, not that clean. 
 
@@ -52,7 +52,7 @@ Another indicator when you can refactor is when you have methods that have a sin
 
 Luckily with Kotlin, you now have extension methods. These allow developers to add methods to classes inside a specific scope. So now we can refactor to this inside the application API implementation (which knows both the application API use cases and the domain):
 
-{% highlight kotlin %}
+``` kotlin
 @Named
 @Transactional
 class AddTableToFloorImpl(private val floorQueryRepository: FloorQueryRepository) : AddTableToFloor {
@@ -71,7 +71,7 @@ class AddTableToFloorImpl(private val floorQueryRepository: FloorQueryRepository
     private fun AddTableToFloor.Request.getFloor() =
             floorQueryRepository.getFloorById(floorId)
 }
-{% endhighlight %}
+```
 
 By just moving a bit of code around, we now have a completely OO based refactoring. We've added 2 methods to `AddTableToFloor.Request` and a method to `Table` within the scope of the use case implementation. These instance methods on these classes don't exist outside of this implementation. 
 

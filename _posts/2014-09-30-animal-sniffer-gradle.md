@@ -12,7 +12,7 @@ Luckily there is a tool called Animal Sniffer that checks your code against a si
 
 Unfortunately, Animal Sniffer doesn't have any Gradle support yet. Most projects that use Animal Sniffer with Gradle use the Ant targets. I'm not a big fan of using Ant legacy in Gradle build file, so I did the only sane thing: write a plugin for Gradle. The build file for the plugin is very simple, it just adds the animal sniffer dependency.
 
-{% highlight groovy %}
+``` groovy
 apply plugin: 'groovy'
 
 repositories {
@@ -24,11 +24,11 @@ dependencies {
     compile localGroovy()
     compile gradleApi()
 }
-{% endhighlight %}
+```
 
 As for the plugin, I used the functionality of the Animal Sniffer Maven plugin as a template. Currently, it should provide the same functionality as the Maven plugin, only a bit groovier. It's still a bit rough around the edges, but it does what it needs to do.
 
-{% highlight groovy %}
+``` groovy
 import groovy.transform.Canonical
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -111,16 +111,16 @@ class AnimalSnifferExtension {
     def annotations = []
     boolean skip = false
 }
-{% endhighlight %}
+```
 
 Using the plugin is dead easy. The plugin was configured locally with the plugin-id `animalsniffer`. After including the jar in the buildscript classpath, configuring the plugin is just a matter of applying the plugin and configuring the signature. To configure the signature just set the `signature` property of the `animalsniffer` extension in your gradle file to the dependency definition of the signature. Currently you can find signatures for all Java JVM older than 8 (1.2 to 7) in the group `org.codehaus.mojo.signature`. For example, to configure for the standard Java 6 API's, you can use the following configuration in your gradle build file.
 
-{% highlight groovy %}
+``` groovy
 apply plugin: "animalsniffer"
 animalsniffer {
     signature = "org.codehaus.mojo.signature:java16:1.0@signature"
 }
-{% endhighlight %}
+```
 
 Once again, writing a Gradle plugin is proving to be dead easy. What could be improved? Perhaps use some mapped values for signature (so you can use `signature = "1.6"` or `signature = "1.6-jrockit"`) which would make configuration a wee bit easier. But that's just syntax sugar.
 
@@ -128,7 +128,7 @@ UPDATE:
 
 Just added the plugin to my Bintray account. Just add to following to your Gradle build file to use the plugin.
 
-{% highlight groovy %}
+``` groovy
 buildscript {
     repositories {
         maven {
@@ -139,4 +139,4 @@ buildscript {
         classpath "be.insaneprogramming.gradle:animalsniffer-gradle-plugin:1.0.0"
     }
 }
-{% endhighlight %}
+```

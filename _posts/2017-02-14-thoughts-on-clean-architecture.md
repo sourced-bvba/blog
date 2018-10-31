@@ -28,17 +28,17 @@ How I interpreted this was to introduce a ResponseModelConsumer. A Boundary has 
 
 For example, say I have a simple Boundary like this:
 
-{% highlight java %}
+``` java
 @FunctionalInterface
 @Boundary
 public interface GetBuilding {
   void execute(GetBuildingRequest request, Consumer<BuildingResponseModel> responseModelConsumer);
 }
-{% endhighlight %}
+```
 
 Then my Controller actually calls the Boundary and passes in a ResponseModelConsumer implementation, a Presenter.
 
-{% highlight java %}
+``` java
 @GET
 @Produces("application/json")
 @Path("/{buildingId}")
@@ -47,7 +47,7 @@ public BuildingJson get(@PathParam(("buildingId")) String buildingId)  {
   getBuilding.execute(new GetBuildingRequest(buildingId), presenter);
   return presenter.getPresentedResult();
 }
-{% endhighlight %}
+```
 
 The `JsonBuildingResponseModelPresenter` has one responsibility: accept BuildingResponseModel objects and convert them to JSON structures (here `BuildingJson`), storing them statefully inside itself and presenting them using `getPresentedResult`.
 

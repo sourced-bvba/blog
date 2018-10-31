@@ -16,7 +16,7 @@ HAL (or Hypertext Application Language) is one of the more widely use hypermedia
 
 An example HAL document would look like this:
 
-{% highlight json %}
+``` json
 {
     "_links": {
         "self": { "href": "/orders" },
@@ -50,7 +50,7 @@ An example HAL document would look like this:
         }]
     }
 }
-{% endhighlight %}
+```
 
 JSON documents that have been enriched by the HAL format have 3 items:
 - The standard JSON state of your resource
@@ -59,7 +59,7 @@ JSON documents that have been enriched by the HAL format have 3 items:
 
 We'll start off by creating some code that creates a basic REST endpoint that we can work on and that basically is able to return the raw JSON state without any hypermedia.
 
-{% highlight kotlin %}
+``` kotlin
 @@SpringBootApplication
 @RestController
 class HalApplication {
@@ -77,11 +77,11 @@ class Order(val total: Double, val currency: String, val status: String)
 fun main(args: Array<String>) {
     SpringApplication.run(HalApplication::class.java, *args)
 }
-{% endhighlight %}
+```
 
 This will return a standard JSON document as we all know and love.
 
-{% highlight json %}
+``` json
 {
    "shippedToday" : 20,
    "currentlyProcessing" : 14,
@@ -98,11 +98,11 @@ This will return a standard JSON document as we all know and love.
       }
    ]
 }
-{% endhighlight %}
+```
 
 To add HAL support, both data classes need to extend `ResourceSupport` which enables them to add links. Now that we've done this we can add the links needed for the example. 
 
-{% highlight kotlin %}
+``` kotlin
 fun getOrders() : Orders {
 	val firstOrder = Order(30.00, "USD", "shipped")
 	firstOrder.add(Link("/orders/123", "self"))
@@ -119,13 +119,13 @@ fun getOrders() : Orders {
 	orders.add(Link(UriTemplate("/orders{?id}"), "ea:find"))
 	return orders
 }
-{% endhighlight %}
+```
 
 I've hardcoded the links here, but using the `ControllerLinkBuilder` you can reference methods on a controller to get the link based on the `RequestMapping` value. But this article hardcoding them will suffice.
 
 If we now get the JSON from the `/orders` endpoint, this is what we get.
 
-{% highlight json %}
+``` json
 {
    "orders" : [
       {
@@ -176,21 +176,21 @@ If we now get the JSON from the `/orders` endpoint, this is what we get.
    },
    "shippedToday" : 20
 }
-{% endhighlight %}
+```
 
 Almost there. The main difference now is the orders, which in the HAL format is an embedded resource. And here be dragons. The support for embeddeds in Spring HATEOAS isn't that great and despite sifting through the code and possible examples, I could get any of them to work. What I ended up doing is handling the embedded as a basic map. Perhaps it's due to the fact that I'm using Kotlin or I'm just missing something, frankly I don't know.
 
 So now the `Orders` looks like this:
 
-{% highlight kotlin %}
+``` kotlin
 class Orders(val currentlyProcessing: Int, val shippedToday: Int, val _embedded: Map<String, List<Any>>) : ResourceSupport()
-{% endhighlight %}
+```
 
 and the creation of the `Orders` object looks like this:
 
-{% highlight kotlin %}
+``` kotlin
 val orders = Orders(14, 20, mapOf(Pair("ea:order", listOf(firstOrder, secondOrder))))
-{% endhighlight %}
+```
 
 After this, you'll end up with the JSON example we started the article with. 
 

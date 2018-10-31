@@ -16,7 +16,7 @@ This approach assumes that you have the ant library on your classpath.
 
 In order to have Geb automatically download and use a version of PhantomJS, add the following to your GebConfig.groovy.
 
-{% highlight groovy %}
+``` groovy
 String phantomJSVersion = '1.9.2'
 
 String platform
@@ -82,7 +82,7 @@ private File downloadDriver(String driverDownloadFullPath, String driverFilePath
 
     return driverFile
 }
-{% endhighlight %}
+```
 
 This script will detect on which platform you're trying to run the tests and download the correct PhantomJS. 
 

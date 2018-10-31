@@ -9,7 +9,7 @@ So I finally made the decision on trying to learn Scala. Little did I know I was
 
 I love Gradle. I love IntelliJ. However, the combination of the two is sometimes enough to drive me utterly crazy. Now take for example the Scala integration. I made the most simple Gradle build possible that compiles a standard Hello World application.<!--more--> 
 
-{% highlight groovy %}
+``` groovy
 apply plugin: 'scala'
 apply plugin: 'idea'
 
@@ -30,7 +30,7 @@ task run(type: JavaExec, dependsOn: classes) {
     classpath sourceSets.main.runtimeClasspath
     classpath configurations.runtime
 }
-{% endhighlight %}
+```
 
 First I stumbled upon the first issue: the Scala gradle plugin is incompatible with Java 8. Not a big issue, but this meant changing my java environment for this build, so it is a nuisance. Once this was fixed, the Gradle build succeeded and Hello World was printed out. 
 

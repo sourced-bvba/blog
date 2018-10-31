@@ -14,20 +14,20 @@ However, taking the reactive route, you soon realize that it is an invasive path
 
 So you end up with code like this in your domain gateway:
 
-{% highlight kotlin %}
+``` kotlin
 interface OrderGateway {
     fun getOrders() : Flux<Order> // or Flowable<Order>
     fun getOrder(orderId: String) : Mono<Order> // or Single<Order>
 }
-{% endhighlight %}
+```
 
 and code like this in your application use cases:
 
-{% highlight kotlin %}
+``` kotlin
 interface GetOrders {
     fun <T> getOrders(presenter: (GetOrdersResponse) -> T) : Flux<T> // or Flowable<T>
 }
-{% endhighlight %}
+```
 
 I can live with that. But. There's a big but. 
 
@@ -39,11 +39,11 @@ Here comes the kicker. All those `map` functions only get triggered if there is 
 
 I've come at the point where I'm wondering whether it is possible to make a reactive API where the transaction boundaries are somewhere in the middle of the call stack. One fix I've found is to do a `collectList().block()` call in the use case so that the `map` function actually already gets called in the use case (where it still has a transactional and therefor an open connection). But it totally defeats the purpose of a reactive API... Another possible solution is to abandon the `Stream` support in Spring Data JPA and use the scheduled support of Project Reactor, ending up with code in my gateway like this:
 
-{% highlight kotlin %}
+``` kotlin
 return Mono.fromCallable { orderJpaRepository.findAll().map { it.toDomain() } }
                 .publishOn(scheduler)
                 .flatMapIterable { it }
-{% endhighlight %}
+```
 
 In any case, the resulting call stack won't be reactive, but as there are no reactive JDBC drivers and there is no native reactive support in JDBC, I think the last possibility might be the cleanest one, deferring the reactive jerry-rigging to the infrastructure layers. And it has the added feature of actually being non-blocking.
 

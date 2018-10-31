@@ -12,7 +12,7 @@ Autoconfigurations with Spring Boot are actually just configurations with condit
 
 So, without further ado, the configuration for adding Axon features to Spring Boot:
 
-{% highlight groovy %}
+``` groovy
 @Configuration
 @ConditionalOnClass(CommandBus)
 class AxonConfiguration {
@@ -60,7 +60,7 @@ class AxonConfiguration {
         return p
     }
 }
-{% endhighlight %}
+```
 
 If you now create a method annotated with `@CommandHandler` and send a command through the gateway, this configuration will make sure the method gets called.
 

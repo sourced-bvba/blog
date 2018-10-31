@@ -16,7 +16,7 @@ I haven't had the time to put this code in a standalone plugin, but it shouldn't
 
 First, I made a buildSrc folder in my project root so I could write the plugin. Then I added a small build.gradle in there to add a dependency to GrGit, which is a great0 library that integrates Gradle with Git.
 
-{% highlight groovy %}
+``` groovy
 apply plugin: 'groovy'
 
 repositories {
@@ -26,11 +26,11 @@ repositories {
 dependencies {
     compile("org.ajoberstar:gradle-git:0.9.0")
 }
-{% endhighlight %} 
+``` 
 
 Then I just had to write the plugin. I wanted to have the generation to run whenever the JavaPlugin's classes task was run, as this should cover most JVM-oriented builds (most require the Java plugin).
 
-{% highlight groovy %}
+``` groovy
 import org.ajoberstar.grgit.Grgit
 import org.gradle.api.DefaultTask
 import org.gradle.api.Plugin
@@ -78,12 +78,12 @@ class GitPropertiesPlugin implements Plugin<Project> {
         }
     }
 }
-{% endhighlight %} 
+``` 
 
 Now I only need to add the plugin to the project and it'll be automatically executed when I build the project.
 
-{% highlight groovy %}
+``` groovy
 apply plugin: GitPropertiesPlugin
-{% endhighlight %} 
+``` 
 
 That really wasn't that hard...

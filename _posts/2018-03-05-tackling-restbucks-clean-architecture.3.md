@@ -13,7 +13,7 @@ In the previous 2 episodes we built the application and domain layer, and built 
 
 First of all, we need to define our JPA entities.
 
-{% highlight kotlin %}
+``` kotlin
 @Entity
 data class OrderEntity(@Id val id: String,
                        val customerName: String,
@@ -33,21 +33,21 @@ data class OrderItemEntity(@GeneratedValue(generator = "UUID")
                            val quantity: Int,
                            @Enumerated val size: Size,
                            @Enumerated val milk: Milk)
-{% endhighlight %}
+```
 
 (small tip: Don't call your entities Order, SQL really doesn't like that and you'll hate yourself every time you need to use backticks because you wanted to use a reserved SQL keyword as a table name)
 
 With Spring Data JPA, building a basic CRUD repository is a breeze.
 
-{% highlight kotlin %}
+``` kotlin
 interface OrderJpaRepository : JpaRepository<OrderEntity, String> 
-{% endhighlight %}
+```
 
 One line of code, so much power. Have I mentioned yet I love Spring Data (not Spring Data REST, no, the persistence part)?
 
 And now we have all the basic components to build our event handlers and our `OrderGateway` implementation. We'll start with the latter.
 
-{% highlight kotlin %}
+``` kotlin
 @Component
 class JpaOrderGateway(val orderJpaRepository: OrderJpaRepository) : OrderGateway {
     override fun getOrder(orderId: String): Order {
@@ -66,11 +66,11 @@ class JpaOrderGateway(val orderJpaRepository: OrderJpaRepository) : OrderGateway
         return OrderItem(product, quantity, size, milk)
     }
 }
-{% endhighlight %}
+```
 
 Not much to it, really, you need to do some translation between the persistent entities and the domain model, but for the rest, it's very straightforward (and clean). Once again, Kotlin's extension functions really help to make the code a lot more readable. So now that we have the read part handling, now we'll tackle the write section by handling the events.
 
-{% highlight kotlin %}
+``` kotlin
 @Component
 class OrderCreatedConsumer(val orderJpaRepository: OrderJpaRepository) : DomainEventConsumer<OrderCreated> {
     override fun consume(event: OrderCreated) {
@@ -112,7 +112,7 @@ class OrderPaidConsumer(val orderJpaRepository: OrderJpaRepository) : DomainEven
         orderJpaRepository.save(order)
     }
 }
-{% endhighlight %}
+```
 
 Now, when you're implementing the events, you sometimes feel that the events really end up in very similar implementations. For example, `OrderPaid` and `OrderDelivered` could be combined in `OrderStatusChanged` if you added a `Status` to the event. However, driving your event design through your implementation may not always be the best idea. For example, what if you wanted another consumer to pick up on `OrderDelivered` and do something particular for that event. If you combined the events, you'd have to add an `if` structure to handle such a case. But as with all things, this is open to interpretation and compromise and there's no black or white answer here.
 

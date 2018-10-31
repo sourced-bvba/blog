@@ -12,7 +12,7 @@ But I've also used Spark for something else. It's extremely easy to make a REST 
 
 The concept is simple: create a text file mapping URLs to JSON files and use Spark to serve those files through the specified URLs. I'm using Groovy here, but it's just as simple to do this with Java.
 
-{% highlight java %}
+``` java
 class RestPrototype {
     public static void main(String[] args) {
         def file = RestPrototype.class.getResource("mapping.txt")
@@ -29,21 +29,21 @@ class RestPrototype {
         }
     }
 }
-{% endhighlight %}
+```
 
 The mapping file is a simple text file that has the url path and the file location, one per line, separated by a whitespace
 
-{% highlight java %}
+``` java
 hello/world data/helloworld.json
-{% endhighlight %}
+```
 
 In this case, the response files are looked up on the classpath, so the application is expecting a `helloworld.json` file in the `data` folder on the classpath. The content can be any JSON.
 
-{% highlight json %}
+``` json
 {
     "value": "hello world"
 }
-{% endhighlight %}
+```
 
 If you now start the application and go to `http://localhost:4567/hello/world`, you'll get the JSON returned.
 
@@ -55,7 +55,7 @@ Implementing a dynamic solution was so easy I decided to put it up as well. I al
 
 You create a basic table (mapping) containing 3 columns, path, location and method (all varchar), that contains the same as your mapping file. I'm using MySQL with the MariaDB driver (because that one isn't GPL). The application class now loads the mapping and also contains a basic path for reloading the mapping (so whenever you add new records, you just need to call an URL). Mind you that the file locations now need to be valid URLs instead of classpath locations.
 
-{% highlight java %}
+``` java
 class RestPrototype {
     public static void main(String[] args) {
        loadResources();
@@ -136,10 +136,10 @@ class RestPrototype {
         }
     }
 }
-{% endhighlight %}
+```
 
 So in order to get the same mapping as above, just execute the following SQL (assuming the helloworld.json file is on the root of your D drive).
 
-{% highlight sql %}
+``` sql
 INSERT INTO mapping VALUES ('hello/world', 'file:///D:/helloworld.json', 'GET');
-{% endhighlight %}
+```

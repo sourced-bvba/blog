@@ -12,7 +12,7 @@ I tried to add GeoJSON support before, but couldn't get the conversion to work p
 
 When you compare the geo classes in Spring Data and GeoJSON, I noticed that only a subset of GeoJSON geometries can be mapped on Spring Data geo classes: Point and Polygon. Spring Boot does not support LineString, MultiLineString, MultiPolygon or MultiPoint. However, in your mapped domain classes, you won't use these normally. Creating a converter that adheres to the GeoJSON format is quite straightforward.
 
-{% highlight groovy %}
+``` groovy
 import com.mongodb.BasicDBObject
 import com.mongodb.DBObject
 import org.springframework.core.convert.converter.Converter
@@ -76,11 +76,11 @@ final class GeoJsonConverters {
         }
     }
 }
-{% endhighlight %}
+```
 
 To add those converters to the Spring context, you'll have to override some methods in your MongoDB spring configuration class.
 
-{% highlight groovy %}
+``` groovy
 import com.mongodb.Mongo
 import org.springframework.beans.factory.annotation.*
 import org.springframework.boot.SpringApplication
@@ -126,7 +126,7 @@ class MongoComparisonMongoConfiguration extends AbstractMongoConfiguration {
         return new CustomConversions(customConverters.flatten())
     }
 }
-{% endhighlight %}
+```
 
 As Spring Boot already provides the configuration of the `Mongo` instance and the name of the database, we can reuse these in the MongoDB configuration class. The custom conversions take preference over the existing ones for Point and Polygon.
 

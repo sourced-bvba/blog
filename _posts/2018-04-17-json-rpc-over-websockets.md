@@ -14,7 +14,7 @@ In hindsight, it wasn't really that big of a challenge. There are quite a few li
 
 So first I started by enabling WebSocket support in my Spring Boot app:
 
-{% highlight kotlin %}
+``` kotlin
 @Configuration
 @EnableWebSocketMessageBroker
 class WebSocketConfig : WebSocketMessageBrokerConfigurer {
@@ -23,11 +23,11 @@ class WebSocketConfig : WebSocketMessageBrokerConfigurer {
                 .withSockJS()
     }
 }
-{% endhighlight %}
+```
 
 Then we create a JSON-RPC service. 
 
-{% highlight kotlin %}
+``` kotlin
 @JsonRpcService("/product")
 interface ProductJsonRpcService {
     fun findProducts(nameContains: String): List<ProductJson>
@@ -41,13 +41,13 @@ class ProductJsonRpcServiceImpl(private val findProducts: FindProducts) : Produc
         return findProducts.perform(FindProducts.Request(nameContains)).toJsonList()
     }
 }
-{% endhighlight %}
+```
 
 For the sake of brevity, we assume here that we have a simple usecase `FindProducts` that provides the backend functionality. In this example, let's assume this will always return a product `steak`.
 
 Now that we have the JSON-RPC service, we can expose it with a websocket.
 
-{% highlight kotlin %}
+``` kotlin
 @Controller
 class WebsocketJsonRpcController(productJsonRpcService: ProductJsonRpcService,
                                  val objectMapper: ObjectMapper) {
@@ -63,7 +63,7 @@ class WebsocketJsonRpcController(productJsonRpcService: ProductJsonRpcService,
     }
 
 }
-{% endhighlight %}
+```
 
 If a web socket is opened on `http://localhost:8080/websocket/json-rpc-request/product` and you send a valid JSON-RPC payload, the correct method will be called on the service and the message will be sent to a user reply channel. The reason for this is by specifying this, only the user that has sent the request will receive the reply. 
 
@@ -71,7 +71,7 @@ And that's it. But how would you use this in practice?
 
 Well, first I needed to build some kind of client that was able to call these kinds of services. What I came up with was this, which is a kind of skeleton for generic JSON-RPC Websocket cients.
 
-{% highlight kotlin %}
+``` kotlin
 abstract class JsonRpcClientService(val session: StompSession, val objectMapper: ObjectMapper, replyChannel: String) : StompFrameHandler {
     val latches = mutableMapOf<String, CountDownLatch>()
     val returnValues = mutableMapOf<String, JsonNode>()
@@ -141,11 +141,11 @@ abstract class JsonRpcClientService(val session: StompSession, val objectMapper:
     data class JsonRpcRequest(val id: String, val method: String, val params: List<Any>)
 
 }
-{% endhighlight %}
+```
 
 This is a basic abstract class for JSON-RPC clients over WebSockets. To use it to call our service, we have the following subclass.
 
-{% highlight kotlin %}
+``` kotlin
 class ProductServiceClient(session: StompSession, objectMapper: ObjectMapper) : JsonRpcClientService(session, objectMapper, "/user/json-rpc-reply/product") {
     override fun getRequestChannel() = "/json-rpc-request/product"
 
@@ -155,13 +155,13 @@ class ProductServiceClient(session: StompSession, objectMapper: ObjectMapper) : 
         return invokeAndReturnList(methodName, listOf(param))
     }
 }
-{% endhighlight %}
+```
 
 This will send a message on `/json-rpc-request/product`, while listening for the reply on `/user/json-rpc-reply/product`. 
 
 This code requires you to build a `StompSession`. If you want to know how to create one, you can do something like this.
 
-{% highlight kotlin %}
+``` kotlin
 private fun createSession(objectMapper: ObjectMapper): StompSession {
     val transports = listOf(WebSocketTransport(StandardWebSocketClient()), RestTemplateXhrTransport())
     val sockJsClient = SockJsClient(transports)
@@ -179,6 +179,6 @@ class SessionHandler() : StompSessionHandlerAdapter() {
     override fun handleFrame(headers: StompHeaders?, payload: Any?) {
     }
 }
-{% endhighlight %}
+```
 
 Mind you, this is all a very naive implementation of the functionality needed to make this work. There are quite a few corner cases that haven't been covered (error handling, security, concurrent usage), but I hope you see the possibilities in combining 2 technologies to create interesting synergies.

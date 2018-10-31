@@ -19,13 +19,13 @@ The examples use Groovy, but all major languages and frameworks like PHP, Ruby o
 Add a secret key to your accounts. Google Authenticator requires a 16-character key, so generating a secret key can for example be done by randomly generating an array of 10 bytes and then 
 BASE64 encoding that array, resulting in a 16-character string.
  
-{% highlight groovy %}
+``` groovy
 static def generateSecret() {
     def buffer = new byte[10];
     new SecureRandom().nextBytes(buffer);
     return new String(new Base32().encode(buffer));
 }
-{% endhighlight %}
+```
 
 You can off course use your own generation algorithm.
 
@@ -33,22 +33,22 @@ You can off course use your own generation algorithm.
 
 Google authenticator uses a QR codes to add an account to it's application. To generate a QR code for a TOTP, you need to create one for the following key URI format:
 
-{% highlight plaintext %}
+``` plaintext
     otpauth://totp/issuer:user@host?secret=xxx&issuer=yyy
-{% endhighlight %}
+```
 
 You can use Google Charts or ZXing to generate QR codes. As an example, I'll use Google Charts, so to generate a QR code for user fred for host myapplication 
 with a secret like NAR5XTDD3EQU22YU, the key URI would be
 
-{% highlight plaintext %}
+``` plaintext
     otpauth://totp/fred@myapplication?secret=NAR5XTDD3EQU22YU
-{% endhighlight %}
+```
 
 With Google Charts, this will generate the needed QR code: 
 
-{% highlight plaintext %}
+``` plaintext
     http://chart.apis.google.com/chart?cht=qr&chs=300x300&chl=otpauth%3A//totp/fred%40myapplication%3Fsecret%3DNAR5XTDD3EQU22YU
-{% endhighlight %}
+```
 
 Scan this code with Google Authenticator and you will have added fred@myapplication to the repository of OTP codes. Link the secret secret to your users' account and you've
 created the foundation for OTP authentication.
@@ -61,15 +61,15 @@ Generating the current code for a timestamp is done by using the algorithm as de
 [wikipedia](http://en.wikipedia.org/wiki/Time-based_One-time_Password_Algorithm). The code itself is just as simple as generating the secret. First of all, you 
 need a time index.
 
-{% highlight groovy %}
+``` groovy
 public static long getTimeIndex() {
     return System.currentTimeMillis()/1000/30;
 }
-{% endhighlight %}
+```
 
 This generates the amount of milliseconds since the UNIX epoch. Then you generate the OTP code for that time index.
 
-{% highlight groovy %}
+``` groovy
 static def getCode(byte[] secret, long timeIndex) 
               throws NoSuchAlgorithmException, InvalidKeyException {
     SecretKeySpec signKey = new SecretKeySpec(secret, "HmacSHA1");
@@ -87,7 +87,7 @@ static def getCode(byte[] secret, long timeIndex)
     }
     return (truncatedHash %= 1000000);
 }
-{% endhighlight %}
+```
 
 
 ### Enjoy two-factor security

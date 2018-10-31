@@ -20,14 +20,14 @@ Whenever I see decent Spring integration, I now immediately look at Spring Boot 
 
 First you need to add a couple of dependencies. Here's what you need in Gradle:
 
-{% highlight groovy %}
+``` groovy
 compile("com.netflix.hystrix:hystrix-javanica:1.3.16")
 compile("com.netflix.hystrix:hystrix-metrics-event-stream:1.3.16")
-{% endhighlight %}
+```
 
 Then you need to create a configuration for Hystrix. I opted to create the configuration just like any other autoconfiguration module in Spring Boot (an `@Configuration` annotated class and a class describing the configuration properties). I also used conditional beans so that the .
 
-{% highlight groovy %}
+``` groovy
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Hystrix.
  *
@@ -65,7 +65,7 @@ class HystrixProperties {
     boolean streamEnabled = false
     String streamUrl = "/hystrix.stream"
 }
-{% endhighlight %}
+```
 
 In short, if you add this to your Spring Boot application, Hystrix will be automatically integrated in your application. As you might have seen, I've also added some configuration properties. I added support for the event stream that powers the dashboard and which is only activated if you add `hystrix.streamEnabled = true` to your `application.properties`. The URL through which the stream is served is also configurable (but has a sensible default). If you want, you can disable Hystrix as a whole by adding `hystrix.enabled = false` to your `application.properties`. This code is actually ready to be put into Spring Boot's autoconfigure module :).
 

@@ -12,13 +12,13 @@ One might think that due to the name, the NodeMCU would be an IoT device using N
 
 However, Lua is also very suited for this use case. The terseness and clear syntax of the language makes it a very nice choice to code IoT applications. For example, to read or write from a GPIO pin, this code will do the trick:
 
-{% highlight lua %}
+``` lua
 pin = 1
 gpio.mode(pin,gpio.OUTPUT)
 gpio.write(pin,gpio.HIGH)
 gpio.mode(pin,gpio.INPUT)
 print(gpio.read(pin))
-{% endhighlight %}
+```
 
 So what’s in the NodeMCU? It has built-in WiFi, an USB ports and has 10 GPIO ports. All pins can be configured as PWM, I2C, or other configurations, but not as analog pins. When you want to read analog input, you’ll need and ADC chip in order to read out values from analog sensors. Thanks to the WiFi, it makes connecting your IoT devices to the internet a whole lot easier.
 

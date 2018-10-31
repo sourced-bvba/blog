@@ -18,13 +18,13 @@ You have a Kotlin class `MyClass` that has a` List<String>` property, called `it
 
 In short, make a class that makes this work:
 
-{% highlight kotlin %}
+``` kotlin
 fun main(args: Array<String>) {
     val myClass = MyClass(listOf("one"))
     myClass.addItem("two")
     println(myClass.items)
 }
-{% endhighlight %}
+```
 
 `MyClass` should accept a `List`, not a `MutableList`. `myClass.items` should also return a `List` (so that `add` is not possible). 
 
@@ -34,7 +34,7 @@ Found it?
 
 Well, it may look easy at first, but Kotlin throws you a curve ball because of the difference between a List and a MutableList. The cleanest solution I could find to this problem is this:
 
-{% highlight kotlin %}
+``` kotlin
 class MyClass(items: List<String>) {
     private val _items : MutableList = items.toMutableList()
     val items: List<String> = _items
@@ -43,7 +43,7 @@ class MyClass(items: List<String>) {
         _items.add(item)
     }
 }
-{% endhighlight %}
+```
 
 If someone has a shorter, cleaner way of achieving this, I'm all ears.
 

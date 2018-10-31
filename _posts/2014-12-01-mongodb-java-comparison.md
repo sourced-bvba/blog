@@ -14,7 +14,7 @@ The 4 approaches I'll compare are using the standard MongoDB Java Driver, Jongo,
 
 The Spring Boot app is as simple as it can be:
 
-{% highlight groovy %}
+``` groovy
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.context.annotation.ComponentScan
@@ -29,11 +29,11 @@ class MongoComparison
         SpringApplication.run(MongoComparison, args);
     }
 }
-{% endhighlight %}
+```
 
 For those interested, I'll also provide the Gradle build file used for the comparison.
 
-{% highlight groovy %}
+``` groovy
 buildscript {
     repositories {
         jcenter()
@@ -67,11 +67,11 @@ dependencies {
 task wrapper(type: Wrapper) {
     gradleVersion = '2.1'
 }
-{% endhighlight %}
+```
 
 Since I'm using Spring Boot with the Spring Data MongoDB support library, there is some autoconfiguration possible. For example, Spring Boot provides a MongoClient and MongoTemplate bean automatically in your Spring Boot's application context. You do need to add some configuration in your application properties (I'm using the YAML style configuration).
 
-{% highlight yaml %}
+``` yaml
 spring:
     groovy:
         template:
@@ -80,7 +80,7 @@ spring:
         mongodb:
             host: "localhost"
             database: "citydbdata"
-{% endhighlight %}
+```
 
 With the foundation in place, we can start to compare.
 
@@ -91,7 +91,7 @@ However, there's nothing you can't do with the Java driver. The driver is automa
 
 This is the implementation for the MongoDB Java Driver:
 
-{% highlight groovy %}
+``` groovy
 import com.mongodb.*
 import org.bson.types.ObjectId
 import org.geojson.Point
@@ -161,18 +161,18 @@ class CityControllerMongoClient {
         Point location
     }
 }
-{% endhighlight %}
+```
 
 The Java drivers revolves entirely around DBObject objects and you'll need to constantly provide mappings between your domain objects and DBObject instances. The MongoDB Java Driver does not provide any form of object mapping. Luckily, the DBObject structure is very map-like and with the Groovy map support with its terse notation style make it a bit less of a pain.
 For the geoNear command, which you need to use to find the nearest city and the distance to that city, you'll probably need to have a look at the MongoDB manual to find out the exact syntax. In short the syntax is
 
-{% highlight json %}
+``` json
 {
    geoNear: collectionName,
    near: { type: "Point" , coordinates: [ longitude, latitude ] } ,
    spherical: true
 }
-{% endhighlight %}
+```
 
 A geoNear command returns the nearest objects in the collection and also provides a field that indicates the distance, which is in meters by default. The format of the near can be either what is shown above or the legacy way of an array of 2 doubles. The former way is now recommended as it adheres to the GeoJSON specification. In all my examples I'm trying to use the GeoJSON notation to store geolocation data where possible. As you can see I'm using a Java library that provides classes for all GeoJSON types.
 
@@ -184,7 +184,7 @@ Jongo is a framework that allows you to interact with a MongoDB instance in a wa
 
 This is the implementation for Jongo:
 
-{% highlight groovy %}
+``` groovy
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.mongodb.MongoClient
 import org.bson.types.ObjectId
@@ -263,7 +263,7 @@ class CityControllerJongo {
         Point location
     }
 }
-{% endhighlight %}
+```
 
 As you can see, Jongo is a lot more String based, especially for the geoNear query. However, thanks to the automatic mapping by Jackson, all the conversion code for the query and the insert can be omitted. 
 
@@ -275,7 +275,7 @@ The people (I can't say guys because of Trisha Gee) at MongoDB also have made a 
 
 Since I'm using the geoNear function, there is no choice but to take the piece of code in the Java Driver example and reuse that for the geo functionality of the use case. This is the implementation for Morphia:
 
-{% highlight groovy %}
+``` groovy
 import com.mongodb.*
 import org.bson.types.ObjectId
 import org.geojson.Point
@@ -366,7 +366,7 @@ class CityControllerMorphia {
         }
     }
 }
-{% endhighlight %}
+```
 
 Because Morphia has no built-in support for GeoJSON, you can either use the legacy way of an array of doubles containing the 2 coordinates or write your own converter. I chose the latter and it's actually not that difficult to write. Just don't forget to add the converter to Morphia. As you can see I had to annotate City with some Morphia annotations but for those familiar with JPA it's quite straightforward. You still need to create the 2dsphere index manually since Morphia doesn't have 2dsphere index query support (yet, it's to be added in the next release).
 
@@ -378,7 +378,7 @@ Spring Data also has its own set of classes to represent geospatial coordinates,
 
 This is the implementation for Morphia:
 
-{% highlight groovy %}
+``` groovy
 import org.bson.types.ObjectId
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.geo.*
@@ -451,7 +451,7 @@ interface CityRepository extends MongoRepository<CityControllerMongoData.City, O
     CityControllerMongoData.City findByName(String name);
     GeoResults<CityControllerMongoData.City> findByLocationNear(Point point, Distance distance);
 }
-{% endhighlight %}
+```
 
 When it comes to readability, Spring Data clearly wins. You don't need to know how queries in MongoDB are built, you just use the naming conventions in the repositories. One small thing you need to remember when using 2dsphere indexes is that you always have to add the distance parameter to the near query methods, otherwise Spring data omits the spherical option in the query for MongoDB (which will fail in that case). If you don't need the distance, you can make the near method return a list of City objects. You don't need to provide an implementation for the interface, Spring Data will do that for you.
 

@@ -16,24 +16,24 @@ So how would you solve this? Well, when you're using Spring in your main partiti
 
 So we start off from the business perspective, by creating an annotation. You can choose to either put this into your application or your domain layer. I tend to put this into my domain layer, as the annotations are part of the domain language and used in the implementation of the application.
 
-{% highlight kotlin %}
+``` kotlin
 annotation class InvoiceViewRestriction
-{% endhighlight %}
+```
 
 Now that we have this annotation, we can use it in the implementation of the use cases. By the way, there is also another reason why I'm putting my annotation in my domain layer: it forces you to put the annotation on the use case implementation instead of the interface. Why? Well, I'm kind of breaking my own rules there: it has a purely technical reason. Method annotations are not inherited and therefor annotation on interfaces cannot be used to match AspectJ pointcuts. Remember I said sometimes you need to make compromises in clean architecture? Well, this for me is one of those compromises. I can work around them by not using AspectJ, but it would just take too long. So I annotate my use case implementation:
 
-{% highlight kotlin %}
+``` kotlin
 class ViewInvoiceImpl : ViewInvoice {
     @InvoiceViewRestriction
     fun viewInvoice(request: Request) : Response {
         ...
     }
 }
-{% endhighlight %}
+```
 
 Now that we have the annotation and its usage in place, we can create the aspect that handles the enforcement. This is something you do in an infrastructure level and where you make the technical framework choices.
 
-{% highlight kotlin %}
+``` kotlin
 @Aspect
 class InvoiceViewRestrictionAspect {
     @Around("@annotation(InvoiceViewRestriction)")
@@ -47,7 +47,7 @@ class InvoiceViewRestrictionAspect {
 
     ... // implementation hasInvoiceViewingRights
 }
-{% endhighlight %}
+```
 
 The checking of the rights can then be framework specific. For example, with Spring Security, you'll check the current user in the `SecurityContextHolder` and check whether he has a certain authority. The contents of the `SecurityContextHolder` would be populated by an infrastructure layer on the other side (web), for example through the standard servlet filters offered by Spring Security.
 
@@ -55,7 +55,7 @@ But you can also choose to create a very naive, bespoke implementation at first 
 
 Without aspects, you can achieve the same thing using domain services. You define a domain service interface like this:
 
-{% highlight kotlin %}
+``` kotlin
 interface AccessManager {
     fun <R> withPermission(permission: Permission, block: () -> R) : R {
         if(currentUserHasAccessTo(permission)) {
@@ -67,19 +67,19 @@ interface AccessManager {
 
     fun currentUserHasAccessTo(permission: Permission) : Boolean
 }
-{% endhighlight %}
+```
 
 And you can have a couple of permissions in an enum
 
-{% highlight kotlin %}
+``` kotlin
 enum class Permission {
     VIEW_INVOICE
 }
-{% endhighlight %}
+```
 
 Instead of using a domain annotation in your use cases, you'll now use a domain service. 
 
-{% highlight kotlin %}
+``` kotlin
 class ViewInvoiceImpl(accessManager: AccessManager) : ViewInvoice {
     fun viewInvoice(request: Request) : Response {
         accessManager.withPermission(Permission.VIEW_INVOICE) {
@@ -87,17 +87,17 @@ class ViewInvoiceImpl(accessManager: AccessManager) : ViewInvoice {
         }
     }
 }
-{% endhighlight %}
+```
 
 In the infrastructure layer, now instead of implementing an aspect to handle the annotation, you implement the domain service:
 
-{% highlight kotlin %}
+``` kotlin
 class AccessManagerImpl : AccessManager {
     fun currentUserHasAccessTo(permission: Permission) : Boolean {
         ...
     }
 }
-{% endhighlight %}
+```
 
 Here you'll use the same concepts as you would implementing the AspectJ advice, checking whether the current user has a certain permission. The `AccessManager` here is quite generic, using an enum, but you could make it as domain-specific as you want, i.e. `accessManager.withViewInvoicePermission { ... }`, the choice is up to you. You can also choose to expand this concept to add ACL-like properties to your access manager by create an abstraction for an ACL secured resource and passing that abstraction to the access manager to check whether a certain user has access to a specific domain object instance. 
 

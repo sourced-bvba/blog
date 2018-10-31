@@ -22,7 +22,7 @@ Why, AOP off course! Aspects allow to write concerns in different modules, which
 
 The new transaction layer will depend on 3 things: the application API layer (so that it can access the annotation), the Spring transaction API (`spring-tx`) and the necessary libraries for AOP (I'm using `spring-boot-starter-aop`). We start off by writing an aspect.
 
-{% highlight kotlin %}
+``` kotlin
 @Aspect
 class TransactionalUseCaseAspect(private val transactionalUseCaseExecutor: TransactionalUseCaseExecutor) {
 
@@ -35,24 +35,24 @@ class TransactionalUseCaseAspect(private val transactionalUseCaseExecutor: Trans
         return transactionalUseCaseExecutor.executeInTransaction(Supplier { proceedingJoinPoint.proceed() })
     }
 }
-{% endhighlight %}
+```
 
 This will match all the public methods in the use cases of the application, which is what we want. This aspect uses a `TransactionalUseCaseExecutor` which looks like this.
 
-{% highlight kotlin %}
+``` kotlin
 open class TransactionalUseCaseExecutor {
     @Transactional
     open fun <T> executeInTransaction(execution: Supplier<T>): T {
         return execution.get()
     }
 }
-{% endhighlight %}
+```
 
 This class is annotated with Spring's `@Transactional`, so it will correctly start a transaction. You could choose to use a lower level approach and use `TransactionTemplate`, but in this case, this approach is sufficient.
 
 To finish, I create a Spring configuration file to define the beans and necessary functionality in order to get the AOP working.
 
-{% highlight kotlin %}
+``` kotlin
 @Configuration
 @EnableAspectJAutoProxy
 @EnableTransactionManagement
@@ -63,13 +63,13 @@ class UseCaseTransactionConfiguration {
     @Bean
     fun transactionalUseCaseExecutor() = TransactionalUseCaseExecutor()
 }
-{% endhighlight %}
+```
 
 If we add this module to the main partition and start the application, the use cases with the `@UseCase` annotation will now be transactional, without even having touched the use-case classes! 
 
 But we can do more with this, for example validation. What if we wanted to validate the argument of the use case (since we use a request/response approach, we assume here that a use case has either a single argument or none)? Then we can write an aspect like this:
 
-{% highlight kotlin %}
+``` kotlin
 @Aspect
 internal class UseCaseValidatonAspect(val validator: Validator) {
 
@@ -92,7 +92,7 @@ internal class UseCaseValidatonAspect(val validator: Validator) {
         }
     }
 }
-{% endhighlight %} 
+``` 
 
 However, this may require you to add the `validation-api` dependency on your application layer. It's not really a technical dependency, as the library solely consists of annotations, but if you truly want to decouple your validation definition, you'd have to find a framework that allows you to do so independently from the class it's validating. I actually made [something like this](https://gitlab.com/lievendoclo/kval-dsl) because of this very reason. 
 

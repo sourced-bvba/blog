@@ -18,15 +18,15 @@ Most of you know you have `JdbcTemplate` and `NamedParameterJdbcTemplate`. The f
 
 JDBI has a very fluent API. For example, take this simple query with JdbcTemplate:
 
-{% highlight java %}
+``` java
 Map<String, Object> params = new HashMap<>();
 params.put("param", "bar");
 return jdbcTemplate.queryForObject("SELECT bar FROM foo WHERE bar = :param", params, String.class);
-{% endhighlight %}
+```
 
 With JDBI, this would result in this (jdbi is an instance of the JDBI class):
 
-{% highlight java %}
+``` java
 Handle handle = jdbi.open();
 String result =  handle
     .createQuery("SELECT bar FROM foo WHERE bar = :param")
@@ -34,34 +34,34 @@ String result =  handle
     .first(String.class);
 handle.close();
 return result;
-{% endhighlight %}
+```
 
 To be completely correct, these two methods aren't really functionally equivalent. The JdbcTemplate version will throw an exception if no result or multiple results are returned whereas the JBDI version will either return null or the first item in the same situation. So to be functionally equivalent, you'd have to add some logic if you want the same behavior, but you get the idea.
 
 Also be aware you need to close your `Handle` instance after you're finished with it. If you don't want this, you'll need to use the callback behavior. This can be accomplished quite cleanly when using Java 8 thanks to closures:
 
-{% highlight java %}
+``` java
 return dbi.withHandle(handle ->
                           handle.createQuery("SELECT bar FROM foo WHERE bar = :param")
                               .bind("param", "bar")
                               .first(String.class)
 );
-{% endhighlight %}
+```
 
 ## Custom parameter binding
 
 We've all seen this in JdbcTemplate:
 
-{% highlight java %}
+``` java
 DateTime now = DateTime.now();
 Map<String, Object> params = new HashMap<>();
 params.put("param", new Timestamp(now.getDate().getTime()));
 return jdbcTemplate.queryForObject("SELECT bar FROM foo WHERE bar = :param", params, String.class);
-{% endhighlight %}
+```
 
 The parameter types are quite limited to those supported by default in plain JDBC, which means simple types, String and java.sql types. With JDBI, you can bind custom argument classes by implementing a custom `Argument` class. In the case above, this would look like this:
 
-{% highlight java %}
+``` java
 public class LocalDateTimeArgument implements Argument {
 
     private final LocalDateTime localDateTime;
@@ -75,11 +75,11 @@ public class LocalDateTimeArgument implements Argument {
         statement.setTimestamp(position, new Timestamp(localDateTime.toEpochSecond(ZoneOffset.UTC)));
     }
 }
-{% endhighlight %}
+```
 
 With JBDI you can then do this:
 
-{% highlight java %}
+``` java
 Handle handle = jdbi.open();
 DateTime now = DateTime.now();
 return handle
@@ -87,7 +87,7 @@ return handle
     .bind("param", new LocalDateTimeArgument(now))
     .first(String.class);
 handle.close();
-{% endhighlight %}
+```
 
 However, you can also register an `ArgumentFactory` that builds the needed Argument classes when needed, which enables you to just bind a `LocalDateTime` value directly.
 
@@ -97,19 +97,19 @@ Those of us that are lucky enough to use Spring Data know that it supports a ver
 
 JDBI however has a very similar feature. You can write interfaces and annotate the method just like Spring Data does. For example, you can create an interface like this:
 
-{% highlight java %}
+``` java
 public interface FooRepository {
     @SqlQuery("SELECT bar FROM foo where bar = :param")
     public String getBar(@Bind("param") String bar);
 }
-{% endhighlight %}
+```
 
 You can then create a concrete instance of that interface with JDBI and use the methods as if they were implemented.
 
-{% highlight java %}
+``` java
 FooRepository repo = jdbi.onDemand(FooRepository.class);
 repo.getBar("bar");
-{% endhighlight %}
+```
 
 When creating an instance `onDemand` you don't need to close the repository instance after you're done with it. This also means you can reuse it as a Spring Bean!
 
