@@ -47,17 +47,17 @@ In code, this looks like this:
 
 ```kotlin
 fun getRestrictiveRules(sourcePackage: String, vararg allowedPackages: String): List<ArchRule> {
-    val list = mutableListOf<ArchRule>()
-    list.add(ArchRuleDefinition.classes()
-            .that().resideInAPackage(sourcePackage)
-            .should().onlyAccessClassesThat().resideInAnyPackage(*allowedPackages))
-    list.add(ArchRuleDefinition.classes()
-            .that().resideInAPackage(sourcePackage)
-            .should().onlyDependOnClassesThat().resideInAnyPackage(*allowedPackages))
-    list.add(ArchRuleDefinition.classes()
-            .that().resideInAPackage(sourcePackage)
-            .should(onlyBeAnnotatedWithClassesInPackage(*allowedPackages)))
-    return list
+    return listOf(
+            ArchRuleDefinition.classes()
+                .that().resideInAPackage(sourcePackage)
+                .should().onlyAccessClassesThat().resideInAnyPackage(*allowedPackages),
+            ArchRuleDefinition.classes()
+                .that().resideInAPackage(sourcePackage)
+                .should().onlyDependOnClassesThat().resideInAnyPackage(*allowedPackages),
+            ArchRuleDefinition.classes()
+                .that().resideInAPackage(sourcePackage)
+                .should(onlyBeAnnotatedWithClassesInPackage(*allowedPackages))
+    )
 }
 
 fun onlyBeAnnotatedWithClassesInPackage(vararg allowedPackages: String): ArchCondition<JavaClass> {
@@ -140,33 +140,39 @@ Now I can create an extension function that returns the rules for the definition
 
 ```kotlin
 fun CleanArchitectureDefinition.rules(): List<ArchRule> {
-    val list = mutableListOf<ArchRule>()
-    this.boundedContexts.forEach { bc ->
-        applicationApiRules(bc).forEach { list.add(it) }
-        applicationImplRules(bc).forEach { list.add(it) }
-        domainRules(bc).forEach { list.add(it) }
-        consumingInfraRules(bc).forEach { list.add(it) }
-        implementingInfraRules(bc).forEach {list.add(it) }
-        sharedVocabularyRules(bc).forEach { list.add(it) }
-        mainPartitionRules(bc).forEach { list.add(it) }
+    return this.boundedContexts.flatMap { bc ->
+        listOf(
+                applicationApiRules(bc),
+                applicationImplRules(bc),
+                domainRules(bc),
+                consumingInfraRules(bc),
+                implementingInfraRules(bc),
+                sharedVocabularyRules(bc),
+                mainPartitionRules(bc)
+        ).flatten()
     }
-    return list
 }
 ```
 
-The consuming infrastructure rules for example look like this:
+The rules can be visually represented by looking at the following schema:
+
+![Schema](/img/clean-arch-modules.png)
+
+Aside from this modules, you can have a shared vocabulary on which every module depends and a main partition that 
+depends on everthing. The thing here is that you need to follow the direction of the arrows: you can only see on what you depend (directly or indirectly). The consuming infrastructure can see the application boundary, but not the application interactors, because that would mean going against the flow of the arrows. It's that simple.
+
+Taking the schema above in mind, the consuming infrastructure rules for example look like this:
 
 ```kotlin
-val list = mutableListOf<ArchRule>()
-    definition.consumingInfrastructurePackages.forEach {
-        val allowedPackages = arrayOf(
-                *definition.consumingInfrastructurePackages,
-                *definition.applicationBoundaryPackages,
-                *definition.sharedVocabularyPackages)
-        list.addAll(getRestrictiveRules(it, *allowedPackages))
-
+fun consumingInfraRules(definition: BoundedContextDefinition): List<ArchRule> {
+    val allowedPackages = arrayOf(
+            *definition.consumingInfrastructurePackages,
+            *definition.applicationBoundaryPackages,
+            *definition.sharedVocabularyPackages)
+    return definition.consumingInfrastructurePackages.flatMap {
+        getRestrictiveRules(it, *allowedPackages)
     }
-    return list.toTypedArray()
+}
 ```
 
 In other words, the packages that I defined as a part of the consuming infrastructure should only be able to access:
@@ -208,18 +214,17 @@ val architecture = cleanArchitecture {
 And the rules get updated like this:
 
 ```kotlin
-val list = mutableListOf<ArchRule>()
-    definition.consumingInfrastructurePackages.forEach {
-        val allowedPackages = arrayOf(
-                *definition.whiteListPackages,
-                *definition.consumingInfrastructurePackages,
-                *definition.consumingInfrastructureWhitelist,
-                *definition.applicationBoundaryPackages,
-                *definition.sharedVocabularyPackages)
-        list.addAll(getRestrictiveRules(it, *allowedPackages))
-
+fun consumingInfraRules(definition: BoundedContextDefinition): List<ArchRule> {
+    val allowedPackages = arrayOf(
+            *definition.whiteListPackages,
+            *definition.consumingInfrastructurePackages,
+            *definition.consumingInfrastructureWhitelist,
+            *definition.applicationBoundaryPackages,
+            *definition.sharedVocabularyPackages)
+    return definition.consumingInfrastructurePackages.flatMap {
+        getRestrictiveRules(it, *allowedPackages)
     }
-    return list.toTypedArray()
+}
 ```
 
 Running all the tests takes less than a second, but this now provides a safety net. If someone adds a dependency to a new layer and starts using its classes, this will break this test. Well, you might say, then you just add that package to the whitelist. True, but to me that would be a trigger for an ADR (Architectural Decision Record). No one should change the architecture validation test without an ADR.
