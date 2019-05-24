@@ -8,7 +8,7 @@ tags : [java, kotlin, architecture]
 
 A new post was long overdue, but I've been too busy working with amazing people at Atomist, making a product that changes how companies look at software delivery. But that's not what this article will be about. I'm going back to one of the topics that has dominated 2018 for me: Clean Architecture.
 
-Recently I looked at a presentation that was given at Spring I/O by Tom Hombergs, which I think was a great presentation on how to implement a clean architecture using Spring. He also has a book that accompanies his presentations (https://leanpub.com/get-your-hands-dirty-on-clean-architecture/), which is quite as good as well, even though I don't always agree with the patterns he's using. 
+Recently I looked at a presentation that was given at Spring I/O by Tom Hombergs, which I think was a great presentation on how to implement a clean architecture using Spring. He also has a book [that accompanies his presentation](https://leanpub.com/get-your-hands-dirty-on-clean-architecture/), which is quite as good as well, even though I don't always agree with the patterns he's using, but it's mostly semantics.
 
 But one of the slides caught my attention, which was the one that showcased a testing mechanism:
 
@@ -32,6 +32,8 @@ void validateRegistrationContextArchitecture() {
         .check(allClasses());
 }
 ```
+
+Being able to test your architecture is very important, because this provides a safety net for people that want to take shortcuts.
 
 If you start searching for this, I hope you have more luck that I had, because I wasn't able to find the code that achieves this, but this encouraged me to create my own which is what this article is about. You see, when you're using a multi-module monorepo for applications or microservices that adheres to clean architecture principles, you can enforce a lot of the rules with the dependencies between the modules. The incoming adapter module (what I call consuming infrastructure) should only have a dependency on the application api module (and perhaps a shared vocabulary). That's it. However, if you have a single repository, people are able to access every part of your application, even though you wouldn't want them to make shortcuts.
 
@@ -176,7 +178,7 @@ However, I soon bumped into a limitation of such a restrictive policy, because o
 
 So now you get the definition like this:
 
-```
+```kotlin
 val architecture = cleanArchitecture {
     boundedContext("be.sourcedbvba.restbucks.order") {
         whiteList = listOf(
