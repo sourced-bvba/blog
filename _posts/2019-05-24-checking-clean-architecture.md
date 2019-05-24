@@ -226,6 +226,6 @@ Running all the tests takes less than a second, but this now provides a safety n
 
 While I know people can game the system by putting classes in specific packages, but even then it would become hard. If you want to put `@RestController` on a use case implementation, you won't be able to unless you put it in the consuming infrastructure packages. But then you suddenly wouldn't be able to access the domain services (because that package only has access to the application layer). I like tests like this, because they force people to adhere to architectural decisions, even if you're using a single module project. Not having to worry that someone is exposing domain objects directly to the outside world through a web interface is priceless.
 
-The code with the complete example you can find here: https://github.com/lievendoclo/clean-restbucks/tree/restrictive/main-partition/src/test/kotlin/be/sourcedbvba/restbucks/order
+The code with the complete example you can find [here](https://github.com/lievendoclo/clean-restbucks/tree/restrictive/main-partition/src/test/kotlin/be/sourcedbvba/restbucks/order).
 
 Feel free to reach out and give comments.
