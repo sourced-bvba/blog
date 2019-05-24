@@ -158,7 +158,7 @@ The rules can be visually represented by looking at the following schema:
 
 ![Schema](/img/clean-arch-modules.png)
 
-Aside from this modules, you can have a shared vocabulary on which every module depends and a main partition that 
+Aside from these modules, you can have a shared vocabulary on which every module depends and a main partition that 
 depends on everthing. The thing here is that you need to follow the direction of the arrows: you can only see on what you depend (directly or indirectly). The consuming infrastructure can see the application boundary, but not the application interactors, because that would mean going against the flow of the arrows. It's that simple.
 
 Taking the schema above in mind, the consuming infrastructure rules for example look like this:
