@@ -1,10 +1,9 @@
 ---
 layout: post
 category : article
-title: "Setting up a flexible Kubernetes environment"
+title: "Setting up a flexible Kubernetes environment with an universal HTTPS ingress"
 comments: true
 tags : [kubernetes]
-hidden: true
 ---
 
 In this cloud-native era, one cannot miss the importance of Kubernetes. It has become a somewhat de facto standard to deploy containerized application in enterprise environments. But the knowledge of many is limited to the abstract principles of the platform, or they have played around with minikube or k3s. But what does it take to create a multi cluster environment which is also fairly easy to maintain.
@@ -93,7 +92,7 @@ kind: Certificate
 metadata:
   name: acme-wtf-wildcard
 spec:
-  secretName: cert-server-wildcard
+  secretName: acme-wtf-wildcard-secret
   issuerRef:
     name: letsencrypt-prod
     kind: ClusterIssuer
@@ -108,11 +107,34 @@ spec:
       - '*.acme.wtf'
 ```
 
+You'll also need a certificate for the testing environment:
+
+```yaml
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  name: acme-wtf-test-wildcard
+spec:
+  secretName: acme-wtf-test-wildcard-secret
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  commonName: '*.test.acme.wtf'
+  dnsNames:
+  - '*.test.acme.wtf'
+  acme:
+    config:
+    - dns01:
+        provider: cf-dns
+      domains:
+      - '*.test.acme.wtf'
+```
+
 After a while, if you execute `kubectl describe certificate acme-wtf-wildcard` on Idefix, you'll see the certificate as issued corrected. With that, we no longer need to worry about any certificates.
 
 Now we need to connect Idefix to Asterix and Obelix. Mind you, Asterix and Obelix can be in a completely different locations or even on different cluster providers, but for simplicity sake, let's assume the following IPs for the  clusters:
-- `10.0.0.1` for Obelix
-- `10.0.0.2` for Asterix
+- `10.0.0.10` for Obelix
+- `10.0.0.20` for Asterix
 
 The first thing we need to do is make sure Idefix knows about Asterix and Obelix. To do this, we'll configure 2 external services in Kubernetes. External services allow you to expose arbitrary services as Kubernetes services. The resources for both clusters on Idefix look like this:
 
@@ -123,7 +145,7 @@ metadata:
   name: asterix-cluster
 spec:
   type: ExternalName
-  externalName: 10.0.0.2
+  externalName: 10.0.0.20
   ports:
   - name: http
     port: 80
@@ -134,7 +156,7 @@ metadata:
   name: obelix-cluster
 spec:
   type: ExternalName
-  externalName: 10.0.0.1
+  externalName: 10.0.0.10
   ports:
   - name: http
     port: 80
@@ -152,7 +174,7 @@ metadata:
 spec:
   tls:
     - hosts:
-      - prod.acme.wtf
+      - *.acme.wtf
       secretName: acme-wtf-wildcard
   rules:
   - host: prod.acme.wtf
@@ -242,7 +264,7 @@ And that's it, the only 'special' thing about it is the ingress host rule.
 
 Once you have this setup installed, you now have an environment that is flexible and secure. In real environment however you need to be aware that Idefix, the gateway Kubernetes, basically is a single point of failure. I highly recommend making sure this is a not a single node cluster. That said, it doesn't have heavy requirements, as its only role is to delegate traffic. 
 
-Adding a new cluster to the mix, for example a staging cluster servicing `*.staging.acme.wtf` is just a matter of adding a service and ingress to Idefix. There's a lot that becomes possible with this setup: multi-provider setups (where you're using for example GKS and AKS that are exact mirrors) are easy. Say that you have a cluster on IP 212.1.1.1 on GKS and another that has IP 168.1.1.1 on AKS. You can create a service like this:
+Adding a new cluster to the mix, for example a staging cluster servicing `*.staging.acme.wtf` is just a matter of adding a service and ingress to Idefix. There's a lot that becomes possible with this setup: multi-provider setups (where you're using for example GKS and AKS that are exact mirrors) are easy. Say that you have a cluster on IP 212.1.1.100 on GKS and another that has IP 168.1.1.100 on AKS. You can create a service like this:
 
 ```yaml
 apiVersion: v1
@@ -261,8 +283,8 @@ metadata:
   name: my-multicluster-service
 subsets:
   - addresses:
-      - ip: 212.1.1.1
-      - ip: 168.1.1.1
+      - ip: 212.1.1.100
+      - ip: 168.1.1.100
     ports:
       - port: 80
 ---
@@ -270,3 +292,4 @@ subsets:
 
 Idefix will then round-robin the service across different Kubernetes providers!
 
+I hope this article showed you that setting up a multi-cluster Kubernetes environment with a single Kubernetes handling the access is a pretty powerful tool to have in your infrastructure toolbox. I definitely learned a great deal about how Kubernetes works.
