@@ -322,6 +322,25 @@ If you now run the application and call `http://localhost:8080/customer`, you'll
 
 If you want to build a native application, you'll need to build your application using the `mvn package -Pnative` command. This can take a couple of minutes, depending on your development rig. Quarkus is quite fast when starting up without native support, around 2 to 3 seconds, but when compiled to a native executable using GraalVM, this is reduces to under 100 milliseconds. That's blazingly fast for a Java application.
 
+## Testing
+
+Testing a Quarkus application can be done by using the Quarkus test framework. If you annotate a test using `@QuarkusTest`, JUnit will start up a Quarkus context before executing a test. A test for the entire application in `main-partition` would look like this:
+
+```java
+@QuarkusTest
+public class CustomerResourceTest {
+	@Test
+	public void testList() {
+		given()
+				.when().get("/customer")
+				.then()
+				.statusCode(200)
+				.body("$.size()", is(2),
+						"name", containsInAnyOrder("Joe", "Jim"));
+	}
+}
+```
+
 ## Conclusion
 
 Quarkus is in many regards a fierce competitor for Spring Boot. Some things, in my opinion, it does even better. Even though there is a framework dependency in my `app-impl`, it's only a dependency for annotations (with Spring, adding `spring-context` to get `@Component` means adding a lot of core Spring dependencies as well). If you do not like this, you can also add a Java file to the main-partition that uses CDI's `@Produces` and creates a bean there, in which case you don't need any additional dependencies in `app-impl`. But for some reason, I mind the `jakarta.enterprise.cdi-api` dependency less than I would the `spring-context` dependency there.
@@ -330,4 +349,6 @@ Quarkus is fast, really fast. It's faster than Spring Boot for this type of appl
 
 However, playing around with Quarkus also made me realize in what world of trouble classic Jakarta EE application servers are in with players like Quarkus. There is not a lot you cannot do yet with Quarkus. [The Quarkus code generator](https://code.quarkus.io) has support for a lot of technologies, some of which are non-trivial to do in a Jakarta EE context with a traditional application server. It has all the bases covered for people familiar with Jakarta EE and the development experience is much smoother. It'll be interesting to see how the ecosystem will handle competition like this.
 
-There's a lot on Quarkus I still have to learn. It apparently also has out of the box support for AWS Lambda, so creating serverless applications with it should prove to be an interesting experience as well. More to come.
+There's a lot on Quarkus I still have to learn. It apparently also has out of the box support for AWS Lambda, so creating serverless applications with it should prove to be an interesting experience as well. More to come. 
+
+The code for this article can be found on [Github](https://github.com/lievendoclo/clean-arch-quarkus).
