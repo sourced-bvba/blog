@@ -1,0 +1,25 @@
+---
+layout: post
+category : article
+title: "Java, Arduino, Raspberry Pi and their lessons"
+comments: true
+tags : [java]
+---
+
+Some time ago, I've posted an article on my hobby project for 2014. An update is more than due.
+
+My initial idea was to build a hydroponics sensor unit using off-the-shelf sensors and an Arduino.<!--more--> The first iteration was an Arduino with an Ethernet shield which provided a socket on which the data could be sent. This proved to be a real pain in the ass (and a very wrong design), coding against the Ethernet shield is something I don't recommend.
+
+Luckily I also had a Raspberry Pi on hand, but using it without an Arduino wasn't an option as the Pi doesn't support analog input (which I needed for my temperature sensor. Adding an Arduino to a Pi is very easy by just connecting it to the USB port. However, this presented another bunch of issues. If I wanted to update the Arduino sketch, I need to uncouple the Arduino from the Pi and connect it to my PC. I know, I could have just compiled the sketch, uploaded it to the Pi and used the commandline to update the Arduino. But I'm lazy. Another, bigger issue was the fact that the communication between Arduino and the Pi through Java is... not nice to work with. The rxtx library is old and the API is terrible. Not to mention you need to install JNI libraries in order to get the damn thing to work. All of that is needed just to read stuff from the serial connection between the Pi and the Arduino. Yuck.
+
+I also experimented with Johnny Five. I made some nice things with it. However, Johnny Five and serial connectivity wasn't possible (due to the underlying Firmata protocol not supporting it). As my sensor array used an UART port, this meant I either had to find complete analog alternatives for all my sensors or abandon Johnny Five. I chose the latter (the sensors weren't cheap).
+
+This made me wonder. Did I really need 2 different devices? Due to the lack of analog inputs on the Pi, I thought I did. A bit of searching led me to a possible solution of my problem: the BeagleBone Black (or BBB). The BBB has roughly the same specs as a Raspberry Pi, but has analog inputs and not 1 but 5 available UART serial ports (which meant a single BBB could power 5 sensor arrays). Granted, it's a wee bit more expensive, but not by much if you need to combine a Pi with an Arduino to get the same result. The icing on the cake, however, was for me the libbulldog java library. This library provided me with every functionality I needed: reading from the serial ports, high/low for the GPIO pins and reading from the analog input. 
+
+So this is where I am right now on the hardware side of things. The software side was a lot easier to build (after all, I'm a developer). However I've gone through a number of iterations as well. My first plan was to have the sensor module push sensor data to the host, which then saved it into a MongoDB. Then this data could be read and aggregated by any client. This works, but I wanted the data to be pushed real-time to the client. Whenever you say server push, you think websockets nowadays. So I built a websocket version using Spring Boot. Very easy, but there was something that kept on nagging. Websockets, for now, seemed overkill. 
+
+Totally unrelated to my hobby I stumbed upon Hystrix, which I've written an article about. Hystrix didn't seem to be important for this project, but after looking at the Hystrix dashboard, a light in my head turned on. See, the Hystrix dashboard gets its data from an application and that data is pushed from the application to the dashboard (giving it real-time-like behavior). Hystrix doesn't do this through websockets but utilizes a feature called Server Sent Events (or SSE). Implementing SSE in Java is peanuts: you create a servlet that returns a response with a text/event-stream mimetype and you can keep on putting stuff on the outputstream. As long as the stream isn't closed, you can keep on pushing stuff on that response. The fun part is that this works natively in the browser (except for IE).
+
+So now I have a basic server application that provides an SSE eventstream that returns the sensordata every second. I also have a rudimentary web client (using AngularJS) that connects to that stream and visualizes the data. When I receive my BBB, it will become the server's host, providing real sensor data. BBB's are notoriously hard to get, but luckily it's open source hardware and that means the Chinese already cloned them. I ordered 2 Chinese BBB clones to experiment with :).
+
+Probably this could have been easier if I didn't want to use Java. I've seen Python scripts doing what I wanted to do on the Pi/Arduino combination and it looked easier. I'm sure this holds for many of my failures, but like I said, I'm lazy and I want quick results. The BBB provides me with every hardware feature I require and has great library support for Java. With the BBB, I have the feeling that given some time, I could build just about anything.

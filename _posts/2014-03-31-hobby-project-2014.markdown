@@ -1,0 +1,20 @@
+---                                                                                                                                                                                           
+layout: post                                                                                                                                                                                  
+category : article                                                                                                                                                                      
+title: "My hobby project for 2014"                                                                                                                                          
+tags : [hobby]                                                                                                                                                                               
+---                                                                                                                                                                                           
+                                                                                                                                                                                              
+Everybody needs a hobby. Mine happens to be gardening and chili growing. Some time ago I discovered the joys of hydroponics growing. However, the geek inside of me kept thinking every time I measured and adjusted the pH and EC values of my system that this could be automated. 
+
+So this year I thought to myself I'd start building a system like this using basic off-the-shelf electronic components and an Arduino micro controller.<!--more-->
+
+The concept is simple: the microcontroller reads values from 3 sensors (pH, EC and temperature). When a certain value is out of the optimal range, actions are taken. For example, if the pH is above a threshold, a pump containing an acid is activated to release a certain amount of acid into the system. If the EC value is below another threshold, another pump containing nutrients is activated releasing a certain amount of fertilizer in the system. The system would wait for 10 minutes and perform the check-adjust again (by that time the values should have stabilized).
+
+The basic components are simple: an Arduino Mega or Due, a pH probe, an EC probe, a temperature probe, sensor modules from Atlas Scientific, an RTC module and 2 peristaltic pumps (by Adafruit). Some other additions I'll incorporate are 2 potentiometers to control the thresholds and an LCD display to show the measured values and the thresholds.  The overall difficulty isn't that high, most things are quite straightforward, so I don't except too many difficulties. 
+
+There are systems out there but just the pH auto adjusters cost well over $300. As it looks, the entire system would cost about the same, but if you would leave out the EC monitoring this would only be $200.  So in essence you're able to build a complete hydroponic automation system for the price of just a pH automation system. A comparable system with regards to functionality (http://store.amhydro.com/IntelliDose-Intelligent-Nutrient-Controller-p/95031.htm) easily costs over $2000. Not to mention this system would still be extensible.
+
+I for one am anxious to see whether the system will work. But if it does, the possibilities are endless. One thing that springs to mind is adding a WiFi shield to the Arduino and having the system transmitting data to a centralized data storage for which a simple web application could be written to visualize data and even allow for configuration (omitting the potentiometers in the process). This way you could automate an entire set of hydroponic systems from a centralized location (making the entire system network capable would add about $50 to the cost). 
+
+If this works, automated hydroponics are within reach of the hobby hydroponic gardener. If it doesn't, I'll still have learned a great deal about Arduino micro controllers. I'm looking forward to it.

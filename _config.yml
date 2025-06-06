@@ -1,0 +1,20 @@
+# Site settings
+title: Sourced Blog
+header-img: img/home-bg.jpg
+email: lieven@sourced-bvba.be
+copyright_name: Sourced BVBA
+description: "Insights, research and opinions"
+baseurl: ""
+url: "https://blog.sourced-bvba.be/"
+twitter_username: lievendoclo
+github_username:  lievendoclo
+email_username:  lieven@sourced-bvba.be
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+permalink: pretty
+paginate: 10
+exclude: ["less","node_modules","Gruntfile.js","package.json","README.md"]
+
+plugins: [jekyll-paginate, jekyll-feed]

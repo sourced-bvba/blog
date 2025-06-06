@@ -1,0 +1,15 @@
+---
+layout: post
+category : article
+title: "Double Loop Learning: a core skill?"
+comments: true
+tags : [opinion]
+---
+
+Everyone has seen the single loop of learning. It the basic Think-Act-Evaluate loop. You start off with a mental model, act on that model based on a set of previously acquired knowledge and evaluate those acts so confirm they meet the goal. Any lessons learned in the Evaluate step are applied to subsequent Act steps as a part of the growing knowledge. This approach can work and has worked, and is in fact how many people go about their daily routine. However, there is a fundamental flaw in this system: what if the Evaluate steps, based on the parameters set forth by the Think steps are wrong? In this case, a downward spiral is inevitable because we base our evaluation on wrong assumption and will end up in the exact same loop once again. Negative outcomes will remain negative.
+
+That is were double loop learning comes in. It forces you to ask the question "Why do we think that?" when evaluating. You need to question your evaluation criteria in order to make sure you don't make wrong assumptions. For example, you are required to implement a web service. You go about and try and find a framework to implement this service. You find framework X but dismiss it because it does not support HATEOAS out of the box and that's the popular think nowadays. Single loop learning result: you still don't have a framework, but now have dismissed framework X for further use. Double loop learning dictates to ask the question 'Do we really need HATEOAS in this case?'. There are now two outcomes: one is the same as single loop learning, but with the difference that you did not dismiss framework X and know that you need to change the mental model to include HATEOAS. The other one is that you conclude that in this case HATEOAS is not needed and have found a solution. In either case, in the next Think step, you'll include thinking about an aspect (HATEOAS) which you didn't include before. This will optimize further loops.
+
+Double loop learning becomes paramount in environment where different fields of study or cultures join. When confronted with a problems, we tend to solve problems based on our own limited knowledge and sometimes even misguided bias. Double loop learning forces our to reassess our misconceptions on a certain subject and promotes inter-professional learning. By asking the 'Why do I think this is wrong?' we learn regardless of the answer to that question: you either get a deeper knowledge of the system and reaffirm your beliefs, or learn something you didn't know before (which more than often can be a eureka moment).
+
+It's one of those basic skills that truly benefits how we learn and react to situations that are presented to us. In IT, it's a core skill, because without double loop learning, we would still be programming in procedural languages, deploying on mainframes, coding in cubicles around the world or using fixed-length record-based formats to store data.
